@@ -37,8 +37,8 @@
   gcp_compute_firewall:
     name: "{{ gcp['playground'] }}-{{ fw_item['name'] }}"
     allowed:
-    - ip_protocol: "{{ fw_item['proto'] }}"
-      ports: "{{ fw_item['ports'] | default(omit) }}"
+      - ip_protocol: "{{ fw_item['proto'] }}"
+        ports: "{{ fw_item['ports'] | default(omit) }}"
     source_ranges: "{{ fw_item['source_ranges'] | default(omit) }}"
     priority: "{{ fw_item['pri'] | default(omit) }}"
     network: "{{ network }}"
@@ -70,11 +70,11 @@
         boot: true
         source: "{{ disk }}"
     network_interfaces:
-     - network: "{{ network }}"
-       access_configs:
-        - name: 'External NAT'
-          nat_ip: "{{ address }}"
-          type: 'ONE_TO_ONE_NAT'
+      - network: "{{ network }}"
+        access_configs:
+          - name: 'External NAT'
+            nat_ip: "{{ address }}"
+            type: 'ONE_TO_ONE_NAT'
     metadata:
       ssh-keys: "{{ gcp['ssh_user'] }}:{{ lookup('file', gcp['ssh_pubkey']) }}"
     zone: "{{ gcp['zone'] }}"

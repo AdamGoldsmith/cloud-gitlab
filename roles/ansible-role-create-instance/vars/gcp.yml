@@ -31,11 +31,15 @@ fw_data:
     pri: 65534
   - name: allow-int-tcp
     proto: tcp
+    ports:
+      - '0-65535'
     source_ranges:
       - '10.128.0.0/9'
     pri: 65534
   - name: allow-int-udp
     proto: udp
+    ports:
+      - '0-65535'
     source_ranges:
       - '10.128.0.0/9'
     pri: 65534
