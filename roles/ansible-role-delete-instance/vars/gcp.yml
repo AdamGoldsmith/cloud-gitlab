@@ -8,4 +8,33 @@ scopes:
   - https://www.googleapis.com/auth/compute
 ssh_user: ansible
 ssh_pubkey: ~/gcp/id_rsa.pub
+fw_data:
+  - name: allow-icmp
+    proto: icmp
+    pri: 65534
+  - name: allow-ssh
+    proto: tcp
+    ports:
+      - '22'
+    pri: 65534
+  - name: allow-gitlab
+    proto: tcp
+    ports:
+      - '4483'
+    pri: 65534
+  - name: allow-int-icmp
+    proto: icmp
+    source_ranges:
+      - '10.128.0.0/9'
+    pri: 65534
+  - name: allow-int-tcp
+    proto: tcp
+    source_ranges:
+      - '10.128.0.0/9'
+    pri: 65534
+  - name: allow-int-udp
+    proto: udp
+    source_ranges:
+      - '10.128.0.0/9'
+    pri: 65534
 
