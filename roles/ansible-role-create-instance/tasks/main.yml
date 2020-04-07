@@ -1,0 +1,26 @@
+---
+
+
+#- name: Include vars for cloud provider
+#  vars:
+#    params:
+#      files:
+#        - '{{ansible_os_distribution}}.yml'
+#        - '{{ansible_os_family}}.yml'
+#        - default.yml
+#      paths:
+#        - 'vars'
+#  include_vars: "{{lookup('first_found', params)}}"
+
+- name: Include tasks for cloud provider
+  vars:
+    files:
+      - "{{ cloud_provider }}.yml"
+      - "unsupported.yml"
+  include_tasks:
+    file: "{{ cloud_item }}"
+  # loop: "{{ lookup('first_found', files) }}"
+  loop: "{{ q('first_found', files) }}"
+  loop_control:
+    loop_var: cloud_item
+

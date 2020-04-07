@@ -1,0 +1,11 @@
+playground: gitlab
+cred_file: ~/gcp/gitlab-6a187fcef3d9.json
+project: inspired-access-273514
+cred_kind: serviceaccount
+region: europe-west2
+zone: europe-west2-b
+scopes:
+  - https://www.googleapis.com/auth/compute
+ssh_user: ansible
+ssh_pubkey: ~/gcp/id_rsa.pub
+

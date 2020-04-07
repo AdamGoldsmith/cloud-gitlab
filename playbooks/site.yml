@@ -1,0 +1,10 @@
+---
+
+- name: Manage GitLab cloud configuration
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+- import_playbook: create_instance.yml
+- import_playbook: delete_instance.yml
+

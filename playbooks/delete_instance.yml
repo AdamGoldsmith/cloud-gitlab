@@ -1,0 +1,16 @@
+---
+
+- name: Cloud provider deployment
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  tasks:
+
+   - name: Destroy cloud instance
+     import_role:
+       name: ansible-role-delete-instance
+     tags:
+       - never
+       - delete
+

@@ -1,0 +1,15 @@
+---
+
+- name: Cloud provider deployment
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  tasks:
+
+   - name: Deploy cloud instance
+     import_role:
+       name: ansible-role-create-instance
+     tags:
+       - create
+
