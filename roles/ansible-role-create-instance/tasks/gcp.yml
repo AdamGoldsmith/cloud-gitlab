@@ -85,5 +85,5 @@
 - name: Add host to groupname
   add_host:
     hostname: "{{ address['address'] }}"
-    groupname: mcs_group
+    groupname: gitlab
 
