@@ -36,9 +36,9 @@
 - name: Create firewall rules
   gcp_compute_firewall:
     name: "{{ gcp['playground'] }}-{{ fw_item['name'] }}"
-    allowed:
-      - ip_protocol: "{{ fw_item['proto'] }}"
-        ports: "{{ fw_item['ports'] | default(omit) }}"
+    allowed: "{{ fw_item['allowed'] }}"
+#      - ip_protocol: "{{ fw_item['proto'] }}"
+#        ports: "{{ fw_item['ports'] | default(omit) }}"
     source_ranges: "{{ fw_item['source_ranges'] | default(omit) }}"
     priority: "{{ fw_item['pri'] | default(omit) }}"
     network: "{{ network }}"

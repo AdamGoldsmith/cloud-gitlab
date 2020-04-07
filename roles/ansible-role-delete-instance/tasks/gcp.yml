@@ -45,9 +45,7 @@
 - name: Destroy firewall rules
   gcp_compute_firewall:
     name: "{{ gcp['playground'] }}-{{ fw_item['name'] }}"
-    allowed:
-      - ip_protocol: "{{ fw_item['proto'] }}"
-        ports: "{{ fw_item['ports'] | default(omit) }}"
+    allowed: "{{ fw_item['allowed'] }}"
     source_ranges: "{{ fw_item['source_ranges '] | default(omit) }}"
     # TODO: Leave here for now (refers to terrible method of indentifying network)
     # network: "{{ network }}"
