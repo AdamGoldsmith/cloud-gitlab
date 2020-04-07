@@ -9,8 +9,6 @@
   debug:
     var: gcp
 
-- pause:
-
 - name: Create a disk
   gcp_compute_disk:
     name: "{{ gcp['playground'] }}-disk"
