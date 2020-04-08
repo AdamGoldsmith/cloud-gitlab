@@ -9,19 +9,6 @@
   debug:
     var: gcp
 
-- name: Create disk
-  gcp_compute_disk:
-    name: "{{ gcp['playground'] }}-disk"
-    size_gb: 50
-    source_image: "{{ gcp['source_image'] }}"
-    zone: "{{ gcp['zone'] }}"
-    project: "{{ gcp['project'] }}"
-    auth_kind: "{{ gcp['cred_kind'] }}"
-    service_account_file: "{{ gcp['cred_file'] }}"
-    scopes: "{{ gcp['scopes'] }}"
-    state: present
-  register: disk
-
 - name: Create network
   gcp_compute_network:
     name: "{{ gcp['playground'] }}-network"
@@ -37,8 +24,6 @@
   gcp_compute_firewall:
     name: "{{ gcp['playground'] }}-{{ fw_item['name'] }}"
     allowed: "{{ fw_item['allowed'] }}"
-#      - ip_protocol: "{{ fw_item['proto'] }}"
-#        ports: "{{ fw_item['ports'] | default(omit) }}"
     source_ranges: "{{ fw_item['source_ranges'] | default(omit) }}"
     priority: "{{ fw_item['pri'] | default(omit) }}"
     network: "{{ network }}"
@@ -60,6 +45,19 @@
     scopes: "{{ gcp['scopes'] }}"
     state: present
   register: address
+
+- name: Create disk
+  gcp_compute_disk:
+    name: "{{ gcp['playground'] }}-disk"
+    size_gb: 50
+    source_image: "{{ gcp['source_image'] }}"
+    zone: "{{ gcp['zone'] }}"
+    project: "{{ gcp['project'] }}"
+    auth_kind: "{{ gcp['cred_kind'] }}"
+    service_account_file: "{{ gcp['cred_file'] }}"
+    scopes: "{{ gcp['scopes'] }}"
+    state: present
+  register: disk
 
 - name: Create instance
   gcp_compute_instance:

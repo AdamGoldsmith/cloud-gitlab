@@ -31,27 +31,9 @@
     state: absent
   register: address
 
-## TODO: Terrible way to get the network resource!
-#- name: Create a network
-#  gcp_compute_network:
-#    name: "{{ gcp['playground'] }}-network"
-#    project: "{{ gcp['project'] }}"
-#    auth_kind: "{{ gcp['cred_kind'] }}"
-#    service_account_file: "{{ gcp['cred_file'] }}"
-#    scopes: "{{ gcp['scopes'] }}"
-#    state: present
-#  register: network
-
 - name: Destroy firewall rules
   gcp_compute_firewall:
     name: "{{ gcp['playground'] }}-{{ fw_item['name'] }}"
-    allowed: "{{ fw_item['allowed'] }}"
-    source_ranges: "{{ fw_item['source_ranges '] | default(omit) }}"
-    # TODO: Leave here for now (refers to terrible method of indentifying network)
-    # network: "{{ network }}"
-    network:
-      selfLink:
-        "global/networks/{{ gcp['playground'] }}-network"
     project: "{{ gcp['project'] }}"
     auth_kind: "{{ gcp['cred_kind'] }}"
     service_account_file: "{{ gcp['cred_file'] }}"
