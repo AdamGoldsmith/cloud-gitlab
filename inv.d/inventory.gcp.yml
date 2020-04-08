@@ -5,4 +5,7 @@ projects:
   - inspired-access-273514
 auth_kind: serviceaccount
 service_account_file: ~/gcp/gitlab-6a187fcef3d9.json
+keyed_groups:
+  - prefix: gcp
+    key: labels
 

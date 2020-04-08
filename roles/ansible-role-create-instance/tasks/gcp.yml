@@ -75,6 +75,8 @@
             type: 'ONE_TO_ONE_NAT'
     metadata:
       ssh-keys: "{{ gcp['ssh_user'] }}:{{ lookup('file', gcp['ssh_pubkey']) }}"
+    labels:
+      ansible_group: "{{ gcp['playground'] }}"
     zone: "{{ gcp['zone'] }}"
     project: "{{ gcp['project'] }}"
     auth_kind: "{{ gcp['cred_kind'] }}"
