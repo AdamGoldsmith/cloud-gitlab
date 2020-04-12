@@ -98,8 +98,3 @@
     delay: 10
     timeout: 60
 
-- name: Add host to groupname
-  add_host:
-    hostname: "{{ address['address'] }}"
-    groupname: gitlab
-
