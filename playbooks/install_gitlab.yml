@@ -1,0 +1,15 @@
+---
+
+- name: Install gitlab server on cloud instance
+  hosts: gcp_ansible_group_gitlab
+  become: yes
+  gather_facts: yes
+
+  tasks:
+
+    - name: Run gitlab server installation role
+      import_role:
+        name: geerlingguy.gitlab
+      tags:
+        - gitlab
+

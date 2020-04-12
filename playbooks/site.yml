@@ -6,5 +6,6 @@
   gather_facts: no
 
 - import_playbook: create_instance.yml
+- import_playbook: install_gitlab.yml
 - import_playbook: delete_instance.yml
 
