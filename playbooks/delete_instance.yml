@@ -7,10 +7,10 @@
 
   tasks:
 
-   - name: Destroy cloud instance
-     import_role:
-       name: ansible-role-delete-instance
-     tags:
-       - never
-       - delete
+    - name: Destroy cloud instance
+      import_role:
+        name: ansible-role-delete-instance
+      tags:
+        - never
+        - delete
 

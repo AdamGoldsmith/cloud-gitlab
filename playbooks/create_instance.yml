@@ -7,9 +7,9 @@
 
   tasks:
 
-   - name: Deploy cloud instance
-     import_role:
-       name: ansible-role-create-instance
-     tags:
-       - create
+    - name: Deploy cloud instance
+      import_role:
+        name: ansible-role-create-instance
+      tags:
+        - create
 
