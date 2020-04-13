@@ -6,13 +6,28 @@
   gather_facts: no
 
   tasks:
+ 
+    - name: Tagged block
+      block:
 
-    - name: Deploy cloud instance
-      import_role:
-        name: ansible-role-create-instance
+        - name: Deploy cloud instance
+          import_role:
+            name: ansible-role-create-instance
+
+        - name: Remove existing host entry from known_hosts
+          vars:
+            pattern:
+              - "Host {{ address['address'] }} found"
+              - "known_hosts updated"
+          command: "ssh-keygen -R {{ address['address'] }}"
+          register: keygen_remove
+          changed_when:
+            - pattern[0] in keygen_remove['stdout']
+            - pattern[1] in keygen_remove['stdout']
+
+        - name: Refresh inventory to ensure new instances exist in inventory
+          meta: refresh_inventory
+
       tags:
         - create
-
-    - name: Refresh inventory to ensure new instances exist in inventory
-      meta: refresh_inventory
 
