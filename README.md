@@ -22,13 +22,19 @@ git clone https://github.com/AdamGoldsmith/cloud-gitlab.git --recurse-submodules
 
 #### Running the deployment
 
-1. To deploy GitLab into GCP
+1. To create GCP instance & install GitLab
 ```
 ansible-playbook playbooks/site.yml --extra-vars cloud_provider=gcp
 ```
-__Note:__ Technically the `--extra-vars` is not needed above as the default cloud is GCP.
+__Note:__ Technically the `--extra-vars` is not needed as the default cloud is GCP.
 
-2. To destroy GCP GitLab deployment
+
+2. To install GitLab to existing instance
+```
+ansible-playbook playbooks/site.yml --extra-vars cloud_provider=gcp --tags gitlab
+```
+
+3. To destroy GCP GitLab deployment
 ```
 ansible-playbook playbooks/site.yml --extra-vars cloud_provider=gcp --tags delete
 ```
