@@ -15,15 +15,10 @@
             name: ansible-role-create-instance
 
         - name: Remove existing host entry from known_hosts
-          vars:
-            pattern:
-              - "Host {{ address['address'] }} found"
-              - "known_hosts updated"
-          command: "ssh-keygen -R {{ address['address'] }}"
-          register: keygen_remove
-          changed_when:
-            - pattern[0] in keygen_remove['stdout']
-            - pattern[1] in keygen_remove['stdout']
+          known_hosts:
+            name: "{{ address['address'] }}"
+            path: ~/.ssh/known_hosts
+            state: absent
 
         - name: Refresh inventory to ensure new instances exist in inventory
           meta: refresh_inventory
