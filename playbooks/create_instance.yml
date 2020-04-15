@@ -21,6 +21,10 @@
 
   post_tasks:
 
+    - name: Wait for things to settle down
+      wait_for:
+        timeout: 15
+
     - name: Refresh inventory to ensure new instances exist in inventory
       meta: refresh_inventory
 

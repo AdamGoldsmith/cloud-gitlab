@@ -98,10 +98,3 @@
     delay: 10
     timeout: 60
 
-# Adding here as meta inventory refresh doesn't seem to pick up correctly
-# It may be possible to remove with some work somehow
-- name: Add host to groupname
-  add_host:
-    hostname: "{{ address['address'] }}"
-    groupname: gcp_ansible_group_gitlab
-
