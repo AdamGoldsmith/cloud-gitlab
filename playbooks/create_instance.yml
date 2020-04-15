@@ -12,13 +12,6 @@
     - name: Deploy cloud instance
       role: ansible-role-create-instance
 
-# TODO: Remove if testing proves unrequired
-#    - name: Remove existing host entry from known_hosts
-#      known_hosts:
-#        name: "{{ address['address'] }}"
-#        path: ~/.ssh/known_hosts
-#        state: absent
-
   post_tasks:
 
     - name: Wait for things to settle down
