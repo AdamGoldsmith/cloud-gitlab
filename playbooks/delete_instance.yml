@@ -4,13 +4,12 @@
   hosts: localhost
   connection: local
   gather_facts: no
+  tags:
+    - never
+    - delete
 
-  tasks:
+  roles:
 
     - name: Destroy cloud instance
-      import_role:
-        name: ansible-role-delete-instance
-      tags:
-        - never
-        - delete
+      role: ansible-role-delete-instance
 

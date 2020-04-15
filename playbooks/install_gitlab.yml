@@ -3,21 +3,12 @@
 - name: Install gitlab server on cloud instance
   hosts: gcp_ansible_group_gitlab
   become: yes
-  gather_facts: no
+  gather_facts: yes
+  tags:
+    - gitlab
 
-  tasks:
+  roles:
 
-    - name: Tagged block
-      block:
-
-        # Running gather facts here to prevent connection errors at playbook level
-        - name: Gather facts
-          setup:
-
-        - name: Run gitlab server installation role
-          import_role:
-            name: geerlingguy.gitlab
-
-      tags:
-        - gitlab
+    - name: Run gitlab server installation role
+      role: geerlingguy.gitlab
 

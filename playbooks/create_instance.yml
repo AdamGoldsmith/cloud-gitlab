@@ -4,25 +4,23 @@
   hosts: localhost
   connection: local
   gather_facts: no
+  tags:
+    - create
 
-  tasks:
+  roles:
  
-    - name: Tagged block
-      block:
+    - name: Deploy cloud instance
+      role: ansible-role-create-instance
 
-        - name: Deploy cloud instance
-          import_role:
-            name: ansible-role-create-instance
+# TODO: Remove if testing proves unrequired
+#    - name: Remove existing host entry from known_hosts
+#      known_hosts:
+#        name: "{{ address['address'] }}"
+#        path: ~/.ssh/known_hosts
+#        state: absent
 
-        - name: Remove existing host entry from known_hosts
-          known_hosts:
-            name: "{{ address['address'] }}"
-            path: ~/.ssh/known_hosts
-            state: absent
+  post_tasks:
 
-        - name: Refresh inventory to ensure new instances exist in inventory
-          meta: refresh_inventory
-
-      tags:
-        - create
+    - name: Refresh inventory to ensure new instances exist in inventory
+      meta: refresh_inventory
 
