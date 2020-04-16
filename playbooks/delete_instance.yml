@@ -8,8 +8,9 @@
     - never
     - delete
 
-  roles:
+  tasks:
 
     - name: Destroy cloud instance
-      role: ansible-role-delete-instance
+      include_role:
+        name: ansible-role-delete-instance
 

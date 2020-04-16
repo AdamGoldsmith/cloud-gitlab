@@ -7,16 +7,13 @@
   tags:
     - create
 
-  roles:
+  tasks:
  
     - name: Deploy cloud instance
-      role: ansible-role-create-instance
+      include_role:
+        name: ansible-role-create-instance
 
   post_tasks:
-
-    - name: Wait for things to settle down
-      wait_for:
-        timeout: 15
 
     - name: Refresh inventory to ensure new instances exist in inventory
       meta: refresh_inventory
