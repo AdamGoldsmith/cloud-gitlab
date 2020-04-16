@@ -1,3 +1,0 @@
-[submodule "roles/geerlingguy.gitlab"]
-	path = roles/geerlingguy.gitlab
-	url = https://github.com/geerlingguy/ansible-role-gitlab
