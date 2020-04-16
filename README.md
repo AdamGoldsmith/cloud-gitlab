@@ -17,7 +17,7 @@ Deploy GitLab CE into a cloud instance. Uses Jeff Geerling's [gitlab role](<http
 #### Getting the code
 
 ```
-git clone https://github.com/AdamGoldsmith/cloud-gitlab.git --recurse-submodules
+git clone https://github.com/AdamGoldsmith/cloud-gitlab.git
 ```
 
 #### Running the deployment
