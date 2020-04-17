@@ -1,2 +1,7 @@
 *.retry
 /roles/ansible-role-gitlab/
+.terraform/
+*.tfstate
+*.tfstate.backup
+locals.tf
+terraform.tfvars
