@@ -13,7 +13,7 @@ export GOOGLE_CREDENTIALS="path to your access key"
 
 2. Go to backend-setup directory
 
-3. Create terraform.tfvars file and populate it:
+3. Create `terraform.tfvars` file and populate it:
 
 ```terraform
 name = "your-unique-bucket-name-here"
@@ -30,7 +30,7 @@ terraform apply
 ```
 
 5. Go back to terraform directory.
-6. Create locals.tf and populate it as follows:
+6. Create `locals.tf` and populate it as follows:
 
 ```terraform
 locals {
@@ -50,9 +50,9 @@ resource "random_pet" "server_name" {
 }
 ```
 
-7. In backend.tf file change bucket name for your bucket (one that you created in previous step)
+7. In `backend.tf` file change bucket name for your bucket (one that you created in previous step)
 
-8. Create terraform.tfvars and populate it with service account email:
+8. Create `terraform.tfvars` and populate it with service account email:
 
 ```terraform
 service_account_email = "service-account-email-here"
