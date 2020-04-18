@@ -90,6 +90,6 @@ ansible-playbook playbooks/site.yml --extra-vars cloud_provider=gcp --tags gitla
 
 3. To destroy GCP GitLab deployment
 ```
-ansible-playbook playbooks/site.yml --extra-vars cloud_provider=gcp --tags delete
+ansible-playbook playbooks/site.yml --extra-vars cloud_provider=gcp --tags destroy
 ```
 

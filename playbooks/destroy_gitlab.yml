@@ -6,11 +6,11 @@
   gather_facts: no
   tags:
     - never
-    - delete
+    - destroy
 
   tasks:
 
     - name: Destroy cloud instance
       include_role:
-        name: ansible-role-delete-instance
+        name: ansible-role-destroy-gitlab
 

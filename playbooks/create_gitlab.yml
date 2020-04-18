@@ -11,7 +11,7 @@
  
     - name: Deploy cloud instance
       include_role:
-        name: ansible-role-create-instance
+        name: ansible-role-create-gitlab
 
   post_tasks:
 
