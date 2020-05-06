@@ -9,9 +9,9 @@
 
   tasks:
  
-    - name: Deploy cloud instance
+    - name: Deploy gitlab cloud instance
       include_role:
-        name: ansible-role-create-gitlab
+        name: ansible-role-gitlab-create
 
   post_tasks:
 

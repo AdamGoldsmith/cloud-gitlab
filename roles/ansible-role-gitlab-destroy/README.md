@@ -1,5 +1,4 @@
-Role Name
-=========
+# ansible-role-gitlab-destroy
 
 A brief description of the role goes here.
 

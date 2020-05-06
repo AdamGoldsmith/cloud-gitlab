@@ -10,7 +10,7 @@
 
   tasks:
 
-    - name: Destroy cloud instance
+    - name: Destroy gitlab cloud instance
       include_role:
-        name: ansible-role-destroy-gitlab
+        name: ansible-role-gitlab-destroy
 
