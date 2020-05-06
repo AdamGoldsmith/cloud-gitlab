@@ -31,7 +31,7 @@ pip install -r ./requirements_gcp.txt
 
 #### GCP credentials
 
-You will need valid credential for GCP to be able to deploy the project.  This is covered in the [Credentials](https://docs.ansible.com/ansible/latest/scenario_guides/guide_gce.html#credentials) section of the Ansible GCP guide.  Assuming that you have created a `Service Account` and have the `.json` file downloaded you can perform the example following steps, pasting in and saving your `Service Account` .`json` contents at the `vi` step:
+You will need valid credentials for GCP to be able to deploy the project.  This is covered in the [Credentials](https://docs.ansible.com/ansible/latest/scenario_guides/guide_gce.html#credentials) section of the Ansible GCP guide.  Assuming that you have created a `Service Account` and have the `.json` file downloaded you can perform the following example steps, pasting in and saving your `Service Account` .`json` contents at the `vi` step:
 
 ```
 mkdir -p ~/gcp
@@ -41,7 +41,7 @@ chmod 0600 ~/gcp/gitlab-6a187fcef3d9.json
 
 #### SSH keypair
 
-As mentioned a keypair is required to to connect to the GCP instance, by default the deployment will look in `~/gcp` for the required key.  To create the location and keypair you can follow the following example:
+As mentioned, a keypair is required to connect to the GCP instance. By default the deployment will look in `~/gcp` for the required key.  To create the location and keypair you can work through the following example:
 
 ```
 cd ~/gcp
