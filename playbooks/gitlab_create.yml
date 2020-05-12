@@ -1,6 +1,6 @@
 ---
 
-- name: Cloud provider deployment
+- name: Cloud provider GitLab deployment
   hosts: localhost
   connection: local
   gather_facts: no

@@ -1,6 +1,6 @@
 ---
 
-- name: Install gitlab server on cloud instance
+- name: Cloud provider GitLab installation
   hosts: gcp_ansible_group_gitlab
   become: yes
   gather_facts: yes
