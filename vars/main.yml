@@ -9,4 +9,7 @@ gcp_data:
   project: inspired-access-273514
   cred_kind: serviceaccount
   region: europe-west2
-  zone: europe-west2-a
+  zones:
+    - europe-west2-a
+    - europe-west2-b
+    - europe-west2-c

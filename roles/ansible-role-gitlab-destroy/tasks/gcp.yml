@@ -13,7 +13,7 @@
   gcp_compute_instance:
     name: "{{ gcp['arena'] }}-vm"
     project: "{{ gcp['project'] }}"
-    zone: "{{ gcp['zone'] }}"
+    zone: "{{ gcp['zones'][0] }}"
     auth_kind: "{{ gcp['cred_kind'] }}"
     service_account_file: "{{ gcp['cred_file'] }}"
     scopes: "{{ gcp['scopes'] }}"

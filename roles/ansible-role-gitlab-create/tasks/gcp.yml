@@ -51,7 +51,7 @@
     name: "{{ gcp['arena'] }}-disk"
     size_gb: 50
     source_image: "{{ gcp['source_image'] }}"
-    zone: "{{ gcp['zone'] }}"
+    zone: "{{ gcp['zones'][0] }}"
     project: "{{ gcp['project'] }}"
     auth_kind: "{{ gcp['cred_kind'] }}"
     service_account_file: "{{ gcp['cred_file'] }}"
@@ -77,7 +77,7 @@
       ssh-keys: "{{ gcp['ssh_user'] }}:{{ lookup('file', gcp['ssh_pubkey']) }}"
     labels:
       ansible_group: "{{ gcp['arena'] }}"
-    zone: "{{ gcp['zone'] }}"
+    zone: "{{ gcp['zones'][0] }}"
     project: "{{ gcp['project'] }}"
     auth_kind: "{{ gcp['cred_kind'] }}"
     service_account_file: "{{ gcp['cred_file'] }}"
