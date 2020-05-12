@@ -8,7 +8,7 @@
     - create
 
   tasks:
- 
+
     - name: Deploy gitlab cloud instance
       include_role:
         name: ansible-role-gitlab-create
