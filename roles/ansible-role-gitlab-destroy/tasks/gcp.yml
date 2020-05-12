@@ -11,7 +11,7 @@
 
 - name: Destroy instance
   gcp_compute_instance:
-    name: "{{ gcp['playground'] }}-vm"
+    name: "{{ gcp['arena'] }}-vm"
     project: "{{ gcp['project'] }}"
     zone: "{{ gcp['zone'] }}"
     auth_kind: "{{ gcp['cred_kind'] }}"
@@ -22,7 +22,7 @@
 
 - name: Destroy external address
   gcp_compute_address:
-    name: "{{ gcp['playground'] }}-address"
+    name: "{{ gcp['arena'] }}-address"
     region: "{{ gcp['region'] }}"
     project: "{{ gcp['project'] }}"
     auth_kind: "{{ gcp['cred_kind'] }}"
@@ -33,7 +33,7 @@
 
 - name: Destroy firewall rules
   gcp_compute_firewall:
-    name: "{{ gcp['playground'] }}-{{ fw_item['name'] }}"
+    name: "{{ gcp['arena'] }}-{{ fw_item['name'] }}"
     project: "{{ gcp['project'] }}"
     auth_kind: "{{ gcp['cred_kind'] }}"
     service_account_file: "{{ gcp['cred_file'] }}"
@@ -44,7 +44,7 @@
 
 - name: Destroy network
   gcp_compute_network:
-    name: "{{ gcp['playground'] }}-network"
+    name: "{{ gcp['arena'] }}-network"
     project: "{{ gcp['project'] }}"
     auth_kind: "{{ gcp['cred_kind'] }}"
     service_account_file: "{{ gcp['cred_file'] }}"

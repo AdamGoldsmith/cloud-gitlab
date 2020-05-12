@@ -11,7 +11,7 @@
 
 - name: Create network
   gcp_compute_network:
-    name: "{{ gcp['playground'] }}-network"
+    name: "{{ gcp['arena'] }}-network"
     auto_create_subnetworks: yes
     project: "{{ gcp['project'] }}"
     auth_kind: "{{ gcp['cred_kind'] }}"
@@ -22,7 +22,7 @@
 
 - name: Create firewall rules
   gcp_compute_firewall:
-    name: "{{ gcp['playground'] }}-{{ fw_item['name'] }}"
+    name: "{{ gcp['arena'] }}-{{ fw_item['name'] }}"
     allowed: "{{ fw_item['allowed'] }}"
     source_ranges: "{{ fw_item['source_ranges'] | default(omit) }}"
     priority: "{{ fw_item['pri'] | default(omit) }}"
@@ -37,7 +37,7 @@
 
 - name: Create external address
   gcp_compute_address:
-    name: "{{ gcp['playground'] }}-address"
+    name: "{{ gcp['arena'] }}-address"
     region: "{{ gcp['region'] }}"
     project: "{{ gcp['project'] }}"
     auth_kind: "{{ gcp['cred_kind'] }}"
@@ -48,7 +48,7 @@
 
 - name: Create disk
   gcp_compute_disk:
-    name: "{{ gcp['playground'] }}-disk"
+    name: "{{ gcp['arena'] }}-disk"
     size_gb: 50
     source_image: "{{ gcp['source_image'] }}"
     zone: "{{ gcp['zone'] }}"
@@ -61,7 +61,7 @@
 
 - name: Create instance
   gcp_compute_instance:
-    name: "{{ gcp['playground'] }}-vm"
+    name: "{{ gcp['arena'] }}-vm"
     machine_type: n1-standard-1
     disks:
       - auto_delete: true
@@ -76,7 +76,7 @@
     metadata:
       ssh-keys: "{{ gcp['ssh_user'] }}:{{ lookup('file', gcp['ssh_pubkey']) }}"
     labels:
-      ansible_group: "{{ gcp['playground'] }}"
+      ansible_group: "{{ gcp['arena'] }}"
     zone: "{{ gcp['zone'] }}"
     project: "{{ gcp['project'] }}"
     auth_kind: "{{ gcp['cred_kind'] }}"
