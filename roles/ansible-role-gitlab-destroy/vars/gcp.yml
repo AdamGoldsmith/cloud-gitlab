@@ -2,12 +2,12 @@ arena: gitlab
 cred_file: "{{ gcp_data['cred_file'] }}"
 project: "{{ gcp_data['project'] }}"
 cred_kind: "{{ gcp_data['cred_kind'] }}"
+ssh_user: "{{ gcp_data['ssh_user'] }}"
+ssh_pubkey: "{{ gcp_data['ssh_pubkey'] }}"
 region: "{{ gcp_data['region'] }}"
 zones: "{{ gcp_data['zones'] }}"
 scopes:
   - https://www.googleapis.com/auth/compute
-ssh_user: ansible
-ssh_pubkey: ~/gcp/id_rsa.pub
 fw_data:
   - name: allow-internal
     allowed:
