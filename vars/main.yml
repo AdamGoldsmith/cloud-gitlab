@@ -4,4 +4,9 @@ external_roles:
   - name: ansible-role-gitlab
     source: https://github.com/geerlingguy/ansible-role-gitlab.git
     version: 2.5.3
-
+gcp_data:
+  cred_file: ~/gcp/gitlab-6a187fcef3d9.json
+  project: inspired-access-273514
+  cred_kind: serviceaccount
+  region: europe-west2
+  zone: europe-west2-a
