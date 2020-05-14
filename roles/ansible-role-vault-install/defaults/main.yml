@@ -1,0 +1,25 @@
+---
+
+vault_src: "https://releases.hashicorp.com/vault/1.4.1/vault_1.4.1_linux_amd64.zip"
+vault_chksum: "sha256:d8266ae2a9a97dcdd3edaf5e05331f7d73dcd1c02470da9e1304c7823d30734a"
+vault_bin_path: "/usr/bin"
+vault_conf: "/etc/vault/config.hcl"
+tls_disable: "false"
+vault_certs: "/etc/vault/certs"
+vault_cn: "{{ ansible_fqdn }}"
+vault_cc: "UK"
+vault_on: "Vault"
+vault_privkey: "{{ vault_certs }}/{{ ansible_fqdn | regex_replace('^www\\.', '') }}.pem"
+vault_csr: "{{ vault_certs }}/{{ ansible_fqdn }}.csr"
+vault_certfile: "{{ vault_certs }}/{{ ansible_fqdn | regex_replace('^www\\.', '') }}.crt"
+vault_addr: "{{ ansible_fqdn }}"
+vault_port: 8200
+vault_cluster_port: 8201
+vault_user: "vault"
+vault_uid: "8201"
+vault_group: "vault"
+vault_gid: "8201"
+vault_service: "vault"
+vault_profile: "/etc/profile.d/vault.sh"
+vault_data_path: "/data/vault"
+vault_ui: "true"

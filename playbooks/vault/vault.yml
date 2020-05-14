@@ -6,5 +6,5 @@
   gather_facts: no
 
 - import_playbook: vault_create.yml
-# - import_playbook: vault_install.yml
+- import_playbook: vault_install.yml
 - import_playbook: vault_destroy.yml
