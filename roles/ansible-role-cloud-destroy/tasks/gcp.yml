@@ -54,4 +54,4 @@
     state: absent
   register: network
   # In case any other services are still using this network
-  ignore_errors: True
+  ignore_errors: true
