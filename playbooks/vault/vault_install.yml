@@ -1,0 +1,15 @@
+---
+
+- name: Cloud provider HashiCorp Vault installation
+  hosts: gcp_ansible_group_vault
+  become: yes
+  gather_facts: yes
+  tags:
+    - install
+    - vault_install
+
+  tasks:
+
+    - name: Run vault server installation role
+      include_role:
+        name: ansible-role-vault-install

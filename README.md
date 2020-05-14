@@ -92,4 +92,3 @@ ansible-playbook playbooks/site.yml --extra-vars cloud_provider=gcp --tags gitla
 ```
 ansible-playbook playbooks/site.yml --extra-vars cloud_provider=gcp --tags destroy
 ```
-

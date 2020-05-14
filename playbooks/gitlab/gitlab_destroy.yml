@@ -1,0 +1,18 @@
+---
+
+- name: Cloud provider GitLab destruction
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tags:
+    - never
+    - destroy
+    - gitlab_destroy
+
+  tasks:
+
+    - name: Destroy gitlab cloud instances
+      vars:
+        service_name: gitlab
+      include_role:
+        name: ansible-role-cloud-destroy

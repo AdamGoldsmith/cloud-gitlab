@@ -1,0 +1,41 @@
+# cred_file: "{{ gcp_data['cred_file'] }}"
+# project: "{{ gcp_data['project'] }}"
+# cred_kind: "{{ gcp_data['cred_kind'] }}"
+# ssh_user: "{{ gcp_data['ssh_user'] }}"
+# ssh_pubkey: "{{ gcp_data['ssh_pubkey'] }}"
+service: "{{ gitlab_data['service_name'] }}"
+network: "{{ gitlab_data['network_name'] }}"
+regions: "{{ gitlab_data['regions'] }}"
+# zones: "{{ gcp_data['zones'] }}"
+source_image: "{{ gitlab_data['source_image'] }}"
+scopes:
+  - https://www.googleapis.com/auth/compute
+fw_data:
+  - name: allow-internal
+    allowed:
+      - ip_protocol: tcp
+        ports:
+          - '0-65535'
+      - ip_protocol: udp
+        ports:
+          - '0-65535'
+      - ip_protocol: icmp
+    source_ranges:
+      - '10.128.0.0/9'
+    pri: 65534
+  - name: allow-icmp
+    allowed:
+      - ip_protocol: icmp
+    pri: 65534
+  - name: allow-ssh
+    allowed:
+      - ip_protocol: tcp
+        ports:
+          - '22'
+    pri: 65534
+  - name: allow-gitlab
+    allowed:
+      - ip_protocol: tcp
+        ports:
+          - '4483'
+    pri: 65534

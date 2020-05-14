@@ -1,0 +1,22 @@
+---
+
+- name: Cloud provider GitLab deployment
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tags:
+    - create
+    - gitlab_create
+
+  tasks:
+
+    - name: Deploy gitlab cloud instances
+      vars:
+        service_name: gitlab
+      include_role:
+        name: ansible-role-cloud-create
+
+  post_tasks:
+
+    - name: Refresh inventory to ensure new instances exist in inventory
+      meta: refresh_inventory

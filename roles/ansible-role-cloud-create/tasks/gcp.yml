@@ -1,0 +1,115 @@
+---
+
+- name: Create network
+  gcp_compute_network:
+    name: "{{ service_data['network'] }}-network"
+    auto_create_subnetworks: yes
+    project: "{{ gcp_data['project'] }}"
+    auth_kind: "{{ gcp_data['cred_kind'] }}"
+    service_account_file: "{{ gcp_data['cred_file'] }}"
+    scopes: "{{ service_data[service_name]['scopes'] }}"
+    state: present
+  register: network
+
+- name: Create firewall rules
+  gcp_compute_firewall:
+    name: "{{ fw_item['name'] }}"
+    description: "{{ fw_item['description'] | default(omit) }}"
+    allowed: "{{ fw_item['allowed'] }}"
+    source_ranges: "{{ fw_item['source_ranges'] | default(omit) }}"
+    priority: "{{ fw_item['pri'] | default(omit) }}"
+    network: "{{ network }}"
+    project: "{{ gcp_data['project'] }}"
+    auth_kind: "{{ gcp_data['cred_kind'] }}"
+    service_account_file: "{{ gcp_data['cred_file'] }}"
+    state: present
+  loop: "{{ service_data[service_name]['fw_data'] }}"
+  loop_control:
+    loop_var: fw_item
+    label: "{{ fw_item['name'] }}"
+
+- name: Create external addresses
+  gcp_compute_address:
+    name: "{{ service_name }}-{{ address_item['name'] }}-address"
+    region: "{{ service_data['region'] }}"
+    project: "{{ gcp_data['project'] }}"
+    auth_kind: "{{ gcp_data['cred_kind'] }}"
+    service_account_file: "{{ gcp_data['cred_file'] }}"
+    scopes: "{{ service_data[service_name]['scopes'] }}"
+    state: present
+  register: addresses
+  loop: "{{ service_data[service_name]['instances'] }}"
+  loop_control:
+    loop_var: address_item
+    label: "{{ service_name }}-{{ address_item['name'] }}-address"
+
+- name: Create disks
+  gcp_compute_disk:
+    name: "{{ service_name }}-{{ instance_item['name'] }}-disk"
+    size_gb: "{{ instance_item['disk']['size_gb'] }}"
+    source_image: "{{ instance_item['disk']['source_image'] }}"
+    zone: "{{ instance_item['zone'] }}"
+    project: "{{ gcp_data['project'] }}"
+    auth_kind: "{{ gcp_data['cred_kind'] }}"
+    service_account_file: "{{ gcp_data['cred_file'] }}"
+    scopes: "{{ service_data[service_name]['scopes'] }}"
+    state: present
+  register: disks
+  loop: "{{ service_data[service_name]['instances'] }}"
+  loop_control:
+    loop_var: instance_item
+    label: "{{ service_name }}-{{ instance_item['name'] }}-disk"
+
+- name: Create instances
+  vars:
+    disk_name: "{{ service_name }}-{{ instance_item['name'] }}-disk"
+    address_name: "{{ service_name }}-{{ instance_item['name'] }}-address"
+  gcp_compute_instance:
+    name: "{{ service_name }}-{{ instance_item['name'] }}-vm"
+    machine_type: "{{ instance_item['machine_type'] }}"
+    disks:
+      - auto_delete: true
+        boot: true
+        source: "{{ disks['results'] |
+          selectattr('name', 'equalto', disk_name) | first }}"
+    network_interfaces:
+      - network: "{{ network }}"
+        access_configs:
+          - name: 'External NAT'
+            nat_ip: "{{ addresses['results'] |
+              selectattr('name', 'equalto', address_name) | first }}"
+            type: 'ONE_TO_ONE_NAT'
+    metadata:
+      ssh-keys: "{{ gcp_data['ssh_user'] }}:\
+        {{ lookup('file', gcp_data['ssh_pubkey']) }}"
+    labels:
+      ansible_group: "{{ service_name }}"
+    zone: "{{ instance_item['zone'] }}"
+    project: "{{ gcp_data['project'] }}"
+    auth_kind: "{{ gcp_data['cred_kind'] }}"
+    service_account_file: "{{ gcp_data['cred_file'] }}"
+    scopes: "{{ service_data[service_name]['scopes'] }}"
+    state: present
+  register: instances
+  loop: "{{ service_data[service_name]['instances'] }}"
+  loop_control:
+    loop_var: instance_item
+    label: "{{ service_name }}-{{ instance_item['name'] }}-vm"
+
+- name: Wait for SSH to come up
+  vars:
+      address_name: "{{ service_name }}-{{ instance_item['name'] }}-address"
+  wait_for:
+    host: "{{ ext_address['address'] }}"
+    port: 22
+    # TODO: Remove is testing seccussful
+    # delay: 10
+    timeout: 60
+  loop: "{{ addresses['results'] }}"
+  loop_control:
+    loop_var: ext_address
+    label: "{{ ext_address['address'] }}"
+
+- name: Wait for things to settle down
+  wait_for:
+    timeout: 10

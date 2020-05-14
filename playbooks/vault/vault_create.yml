@@ -1,0 +1,22 @@
+---
+
+- name: Cloud provider Vault deployment
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tags:
+    - create
+    - vault_create
+
+  tasks:
+
+    - name: Deploy vault cloud instances
+      vars:
+        service_name: vault
+      include_role:
+        name: ansible-role-cloud-create
+
+  post_tasks:
+
+    - name: Refresh inventory to ensure new instances exist in inventory
+      meta: refresh_inventory

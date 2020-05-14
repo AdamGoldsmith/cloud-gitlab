@@ -1,0 +1,18 @@
+---
+
+- name: Cloud provider Vault destruction
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tags:
+    - never
+    - destroy
+    - vault_destroy
+
+  tasks:
+
+    - name: Destroy vault cloud instances
+      vars:
+        service_name: vault
+      include_role:
+        name: ansible-role-cloud-destroy

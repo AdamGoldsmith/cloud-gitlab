@@ -1,0 +1,10 @@
+[gcp_ansible_group_gitlab]
+
+[gitlab:children]
+gcp_ansible_group_gitlab
+
+[gcp_ansible_group_vault]
+
+[vault:children]
+gcp_ansible_group_vault
+

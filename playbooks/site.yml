@@ -4,14 +4,6 @@
   hosts: localhost
   connection: local
   gather_facts: no
-  tags:
-    - always
 
-  pre_tasks:
-
-    - name: Include project-wide variables
-      include_vars:
-        file: ../vars/main.yml
-
-- import_playbook: gitlab.yml
-
+- import_playbook: gitlab/gitlab.yml
+- import_playbook: vault/vault.yml

@@ -47,4 +47,3 @@ resource "google_compute_firewall" "gitlab_fw_external" {
 resource google_compute_address static {
   name = "gitlab-static-ip"
 }
-

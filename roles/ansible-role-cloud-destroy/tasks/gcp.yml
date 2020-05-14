@@ -1,0 +1,57 @@
+---
+
+- name: Destroy instances
+  vars:
+    disk_name: "{{ service_name }}-{{ instance_item['name'] }}-disk"
+  gcp_compute_instance:
+    name: "{{ service_name }}-{{ instance_item['name'] }}-vm"
+    zone: "{{ instance_item['zone'] }}"
+    project: "{{ gcp_data['project'] }}"
+    auth_kind: "{{ gcp_data['cred_kind'] }}"
+    service_account_file: "{{ gcp_data['cred_file'] }}"
+    scopes: "{{ service_data[service_name]['scopes'] }}"
+    state: absent
+  register: instances
+  loop: "{{ service_data[service_name]['instances'] }}"
+  loop_control:
+    loop_var: instance_item
+    label: "{{ service_name }}-{{ instance_item['name'] }}-vm"
+
+- name: Destroy external addresses
+  gcp_compute_address:
+    name: "{{ service_name }}-{{ address_item['name'] }}-address"
+    region: "{{ service_data['region'] }}"
+    project: "{{ gcp_data['project'] }}"
+    auth_kind: "{{ gcp_data['cred_kind'] }}"
+    service_account_file: "{{ gcp_data['cred_file'] }}"
+    scopes: "{{ service_data[service_name]['scopes'] }}"
+    state: absent
+  register: address
+  loop: "{{ service_data[service_name]['instances'] }}"
+  loop_control:
+    loop_var: address_item
+    label: "{{ service_name }}-{{ address_item['name'] }}-address"
+
+- name: Destroy firewall rules
+  gcp_compute_firewall:
+    name: "{{ fw_item['name'] }}"
+    project: "{{ gcp_data['project'] }}"
+    auth_kind: "{{ gcp_data['cred_kind'] }}"
+    service_account_file: "{{ gcp_data['cred_file'] }}"
+    state: absent
+  loop: "{{ service_data[service_name]['fw_data'] }}"
+  loop_control:
+    loop_var: fw_item
+    label: "{{ fw_item['name'] }}"
+
+- name: Destroy network
+  gcp_compute_network:
+    name: "{{ service_data['network'] }}-network"
+    project: "{{ gcp_data['project'] }}"
+    auth_kind: "{{ gcp_data['cred_kind'] }}"
+    service_account_file: "{{ gcp_data['cred_file'] }}"
+    scopes: "{{ service_data[service_name]['scopes'] }}"
+    state: absent
+  register: network
+  # In case any other services are still using this network
+  ignore_errors: True
