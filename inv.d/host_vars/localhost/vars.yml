@@ -3,7 +3,7 @@
 cloud_provider: gcp
 
 gcp_data:
-  cred_file: ~/gcp/gitlab-6a187fcef3d9.json
+  cred_file: ~/gcp/gitlab-creds.json
   project: inspired-access-273514
   cred_kind: serviceaccount
   ssh_user: ansible

@@ -35,8 +35,8 @@ You will need valid credentials for GCP to be able to deploy the project.  This 
 
 ```
 mkdir -p ~/gcp
-vi ~/gcp/gitlab-6a187fcef3d9.json
-chmod 0600 ~/gcp/gitlab-6a187fcef3d9.json
+vi ~/gcp/gitlab-creds.json
+chmod 0600 ~/gcp/gitlab-creds.json
 ```
 
 #### SSH keypair
