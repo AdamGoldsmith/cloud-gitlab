@@ -1,0 +1,32 @@
+---
+
+- name: Start vault systemd service
+  systemd:
+    name: "{{ vault_service }}"
+    state: started
+
+- name: Initialise vault
+  uri:
+    url: "https://{{ vault_addr }}:{{ vault_port }}/v1/sys/init"
+#    client_cert: "{{ vault_certfile }}"
+    validate_certs: no
+    method: PUT
+    body: "{{ lookup('file','init_params.json') }}"
+    body_format: json
+    return_content: yes
+    status_code: 200
+  become: no
+  register: vault_init
+  run_once: yes
+
+- name: Save keys locally
+  copy:
+    content: "{{ vault_init.json }}"
+    dest: "{{ vault_keysfile }}"
+    mode: 0600
+  delegate_to: localhost
+  become: no
+  no_log: yes
+  when: vault_init is not skipped
+  run_once: yes
+
