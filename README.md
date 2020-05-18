@@ -12,7 +12,7 @@ Deploy GitLab CE into a cloud instance. Uses Jeff Geerling's [gitlab role](<http
 
 * Pre-configured cloud provider credentials. For example, with GCP a service account JSON file
 * SSH key pair for connecting to newly-created instance
-* Ansible (tested with 2.9.4)
+* Ansible 2.7+ (tested with 2.9.4)
 
 For further information refer to the [Google Cloud Platform Guide](https://docs.ansible.com/ansible/latest/scenario_guides/guide_gce.html)
 
