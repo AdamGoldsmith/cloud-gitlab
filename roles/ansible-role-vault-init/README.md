@@ -1,5 +1,4 @@
-Role : ansible-role-vault-init
-==============================
+# ansible-role-vault-init
 
 Initialise Hashicorp's vault by
 * Stopping vault systemd service
@@ -23,6 +22,7 @@ Role Variables
 
 defaults/main.yml
 ```
+vault_protocol: "{{ vault_tls_disable | default(false) | bool | ternary('http', 'https') }}"    # HTTP/HTTPS connection to Vault service - default HTTPS
 vault_addr: "{{ ansible_fqdn }}"								# Vault listener address
 vault_port: 8200										# Vault listener port
 vault_certs: "/etc/vault/certs"									# Vault certificates directory

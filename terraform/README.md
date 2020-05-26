@@ -43,7 +43,6 @@ locals {
     instance_type = "n1-standard-1"
     ssh_user = "ansible"
     ssh_pubkey = "path-to-your-key"
-    
 }
 
 resource "random_pet" "server_name" {

@@ -1,0 +1,73 @@
+---
+
+- name: Start vault systemd service
+  systemd:
+    name: "{{ vault_service }}"
+    state: started
+  become: yes
+
+- name: Retrieve keys locally
+  set_fact:
+    vault_keys: "{{ lookup('file','{{ vault_keysfile }}') | from_json }}"
+  delegate_to: localhost
+  run_once: yes
+
+- name: Detect vault status
+  uri:
+    url: "{{ vault_protocol }}://{{ vault_addr }}:{{ vault_port }}/v1/sys/health"
+    validate_certs: no
+    method: GET
+    status_code:
+      - 200
+      - 429
+      - 501
+      - 503
+  register: vault_status
+
+- name: Unseal initialised vaults first
+  uri:
+    url: "{{ vault_protocol }}://{{ vault_addr }}:{{ vault_port }}/v1/sys/unseal"
+    validate_certs: no
+    method: PUT
+    body: "{ 'key':'{{ item }}' }"
+    body_format: json
+    return_content: yes
+    status_code: 200
+  # Pick threshold number of random keys from keys list
+  loop: "{{ (vault_keys['keys'] | shuffle) [:key_threshold] }}"
+  no_log: yes
+  register: vault_unseal_result
+  when: vault_status['status'] == 503
+
+# Set a localhost fact when one of the vaults was unsealed
+# In this case, when not all vaults were "skipped"
+# Delegated to localhost as unsealed vault is not known
+- name: Capture unseal process
+  set_fact:
+    vault_unsealed: yes
+  delegate_to: "{{ ansible_play_hosts[0] }}"
+  loop: "{{ ansible_play_hosts }}"
+  run_once: yes
+  when: hostvars[item]['vault_unseal_result']['results'] |
+    rejectattr('skipped', 'defined') | list | length
+
+# Pause depending on condition of localhost fact
+- name: Wait for raft cluster to stabilise
+  pause:
+    seconds: 10
+  when: hostvars[ansible_play_hosts[0]]['vault_unsealed'] |
+    default(false) | bool
+
+- name: Unseal remaining vaults
+  uri:
+    url: "{{ vault_protocol }}://{{ vault_addr }}:{{ vault_port }}/v1/sys/unseal"
+    validate_certs: no
+    method: PUT
+    body: "{ 'key':'{{ item }}' }"
+    body_format: json
+    return_content: yes
+    status_code: 200
+  # Pick threshold number of random keys from keys list
+  loop: "{{ (vault_keys['keys'] | shuffle) [:key_threshold] }}"
+  no_log: yes
+  when: vault_status['status'] == 501

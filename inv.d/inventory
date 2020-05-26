@@ -1,3 +1,9 @@
+#[gcp_ansible_group_bastion]
+
+[bastion:children]
+#gcp_ansible_group_bastion
+gcp_ansible_group_gitlab
+
 [gcp_ansible_group_gitlab]
 
 [gitlab:children]
@@ -8,3 +14,6 @@ gcp_ansible_group_gitlab
 [vault:children]
 gcp_ansible_group_vault
 
+[sshproxy:children]
+vault
+gitlab

@@ -1,0 +1,16 @@
+---
+
+- name: Cloud provider HashiCorp Vault removal
+  hosts: vault
+  become: yes
+  gather_facts: yes
+  tags:
+    - never
+    - remove
+    - vault_remove
+
+  tasks:
+
+    - name: Run vault server removal role
+      include_role:
+        name: ansible-role-vault-remove

@@ -21,6 +21,7 @@ service_data:
           # source_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-1604-lts
         machine_type: n1-standard-1
         zone: europe-west2-a
+        create_external_ip: yes
     scopes:
       - https://www.googleapis.com/auth/compute
     fw_data:
@@ -56,6 +57,13 @@ service_data:
             ports:
               - '4483'
         pri: 65534
+      - name: allow-gateway
+        description: Network Proxy
+        allowed:
+          - ip_protocol: tcp
+            ports:
+              - '3128'
+        pri: 65534
   vault:
     instances:
       - name: 1
@@ -65,6 +73,7 @@ service_data:
           # source_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-1604-lts
         machine_type: n1-standard-1
         zone: europe-west2-a
+        create_external_ip: no
       - name: 2
         disk:
           size_gb: 50
@@ -72,6 +81,7 @@ service_data:
           # source_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-1604-lts
         machine_type: n1-standard-1
         zone: europe-west2-b
+        create_external_ip: no
       - name: 3
         disk:
           size_gb: 50
@@ -79,6 +89,7 @@ service_data:
           # source_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-1604-lts
         machine_type: n1-standard-1
         zone: europe-west2-c
+        create_external_ip: no
     scopes:
       - https://www.googleapis.com/auth/compute
     fw_data:

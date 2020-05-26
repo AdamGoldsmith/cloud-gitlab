@@ -1,4 +1,4 @@
-# ansible-role-gitlab-destroy
+# ansible-role-cloud-destroy
 
 A brief description of the role goes here.
 

@@ -42,6 +42,7 @@
   loop_control:
     loop_var: address_item
     label: "{{ service_name }}-{{ address_item['name'] }}-address"
+  when: address_item['create_external_ip'] | default(False) | bool
 
 - name: Create disks
   gcp_compute_disk:
@@ -60,7 +61,38 @@
     loop_var: instance_item
     label: "{{ service_name }}-{{ instance_item['name'] }}-disk"
 
-- name: Create instances
+- name: Create instances without external IP addresses
+  vars:
+    disk_name: "{{ service_name }}-{{ instance_item['name'] }}-disk"
+  gcp_compute_instance:
+    name: "{{ service_name }}-{{ instance_item['name'] }}-vm"
+    machine_type: "{{ instance_item['machine_type'] }}"
+    disks:
+      - auto_delete: true
+        boot: true
+        source: "{{ disks['results'] |
+          selectattr('name', 'equalto', disk_name) | first }}"
+    network_interfaces:
+      - network: "{{ network }}"
+    metadata:
+      ssh-keys: "{{ gcp_data['ssh_user'] }}:\
+        {{ lookup('file', gcp_data['ssh_pubkey']) }}"
+    labels:
+      ansible_group: "{{ service_name }}"
+    zone: "{{ instance_item['zone'] }}"
+    project: "{{ gcp_data['project'] }}"
+    auth_kind: "{{ gcp_data['cred_kind'] }}"
+    service_account_file: "{{ gcp_data['cred_file'] }}"
+    scopes: "{{ service_data[service_name]['scopes'] }}"
+    state: present
+  register: instances
+  loop: "{{ service_data[service_name]['instances'] |
+    rejectattr('create_external_ip') | list }}"
+  loop_control:
+    loop_var: instance_item
+    label: "{{ service_name }}-{{ instance_item['name'] }}-vm"
+
+- name: Create instances with external IP addresses
   vars:
     disk_name: "{{ service_name }}-{{ instance_item['name'] }}-disk"
     address_name: "{{ service_name }}-{{ instance_item['name'] }}-address"
@@ -76,8 +108,10 @@
       - network: "{{ network }}"
         access_configs:
           - name: 'External NAT'
-            nat_ip: "{{ addresses['results'] |
-              selectattr('name', 'equalto', address_name) | first }}"
+            nat_ip: "{{ addresses['results'] | rejectattr('skipped', 'defined') |
+              selectattr('name', 'equalto', address_name) | list | length |
+              ternary(addresses['results'] | rejectattr('skipped', 'defined') |
+              selectattr('name', 'equalto', address_name) | first, omit) }}"
             type: 'ONE_TO_ONE_NAT'
     metadata:
       ssh-keys: "{{ gcp_data['ssh_user'] }}:\
@@ -90,26 +124,9 @@
     service_account_file: "{{ gcp_data['cred_file'] }}"
     scopes: "{{ service_data[service_name]['scopes'] }}"
     state: present
-  register: instances
-  loop: "{{ service_data[service_name]['instances'] }}"
+  register: instances_ext
+  loop: "{{ service_data[service_name]['instances'] |
+    selectattr('create_external_ip') | list }}"
   loop_control:
     loop_var: instance_item
     label: "{{ service_name }}-{{ instance_item['name'] }}-vm"
-
-- name: Wait for SSH to come up
-  vars:
-      address_name: "{{ service_name }}-{{ instance_item['name'] }}-address"
-  wait_for:
-    host: "{{ ext_address['address'] }}"
-    port: 22
-    # TODO: Remove is testing seccussful
-    # delay: 10
-    timeout: 60
-  loop: "{{ addresses['results'] }}"
-  loop_control:
-    loop_var: ext_address
-    label: "{{ ext_address['address'] }}"
-
-- name: Wait for things to settle down
-  wait_for:
-    timeout: 10

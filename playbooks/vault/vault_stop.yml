@@ -1,0 +1,16 @@
+---
+
+- name: Cloud provider Vault stop
+  hosts: vault
+  become: yes
+  tags:
+    - never
+    - vault_stop
+
+  tasks:
+
+    - name: Stop vault cloud instances
+      vars:
+        service_name: vault
+      include_role:
+        name: ansible-role-vault-stop

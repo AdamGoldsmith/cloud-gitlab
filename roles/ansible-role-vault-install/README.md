@@ -1,5 +1,4 @@
-Role : ansible-role-vault-install
-=================================
+# ansible-role-vault-install
 
 Installs Hashicorp's vault by
 * Downloading & unzipping vault from Hashicorp's releases site into /usr/bin
@@ -33,7 +32,7 @@ vault_src: "https://releases.hashicorp.com/vault/0.10.3/vault_0.10.3_linux_amd64
 vault_chksum: "sha256:ffec1c201f819f47581f54c08653a8d17ec0a6699854ebd7f6625babb9e290ed"	# Vault download file checksum
 vault_bin_path: "/usr/bin"								# Path to install vault binary
 vault_conf: "/etc/vault/config.hcl"							# Vault configuration file
-tls_disable: "false"									# Choose whether to disable TLS for vault connections (not advised)
+vault_tls_disable: "false"								# Choose whether to disable TLS for vault connections (not advised)
 vault_certs: "/etc/vault/certs"								# Vault certificates directory
 vault_cn: "{{ ansible_fqdn }}"								# CSR Common Name
 vault_cc: "UK"										# CSR Country Code
@@ -41,6 +40,7 @@ vault_on: "Vault"									# CSR Organization Name
 vault_privkey: "{{ vault_certs }}/{{ vault_cn | regex_replace('^www\\.', '') }}.pem"	# OpenSSL Private Key filename
 vault_csr: "{{ vault_certs }}/{{ vault_cn }}.csr"					# OpenSSL Certificate Signing Request filename
 vault_certfile: "{{ vault_certs }}/{{ vault_cn | regex_replace('^www\\.', '') }}.crt"	# OpenSSL Certificate filename
+vault_protocol: "{{ vault_tls_disable | bool | ternary('http', 'https') }}"             # HTTP/HTTPS connection to Vault service - default HTTPS
 vault_addr: "{{ ansible_fqdn }}"							# Vault listener address
 vault_port: 8200									# Vault listener port
 vault_cluster_port: 8201								# Vault cluster port
@@ -89,4 +89,3 @@ Author Information
 ------------------
 
 Adam Goldsmith
-

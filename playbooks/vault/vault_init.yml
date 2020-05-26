@@ -5,6 +5,7 @@
   become: yes
   gather_facts: yes
   tags:
+    - vault
     - vault_init
 
   tasks:

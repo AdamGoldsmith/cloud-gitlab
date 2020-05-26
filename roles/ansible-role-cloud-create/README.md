@@ -1,4 +1,4 @@
-# ansible-role-gitlab-create
+# ansible-role-cloud-create
 
 A brief description of the role goes here.
 

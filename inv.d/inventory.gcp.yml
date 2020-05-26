@@ -3,8 +3,22 @@
 plugin: gcp_compute
 projects:
   - inspired-access-273514
+# Targetting zones can increase response times
+# zones:
+#   - "europe-west2-a"
+#   - "europe-west2-b"
+#   - "europe-west2-c"
 auth_kind: serviceaccount
 service_account_file: ~/gcp/gitlab-creds.json
 keyed_groups:
   - prefix: gcp
     key: labels
+# Configure hostnames: to return the desired instance hostname data, default
+# is ['public_ip', 'private_ip', 'name']
+# Private is useful if you want to connect to all hosts via an SSH bastion proxy
+# https://www.diewufeiyang.com/ansible/en/plugins/inventory/gcp_compute.html
+# TODO: Write some notes in the README about this part & how dynamically determining
+# the hostname to connect to (private or public) in group_vars/sshproxy/vars.yml
+# is based on whether the target has an available public IP address or not.
+# hostnames:
+#   - private_ip

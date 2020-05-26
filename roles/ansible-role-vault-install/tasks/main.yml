@@ -63,39 +63,67 @@
     name: pip
     state: latest
 
-- name: Install python OpenSSL dependencies
-  pip:
-    name: "{{ item }}"
-  loop:
-    - "pyOpenSSL"
+- name: TLS block
+  block:
 
-- name: Generate OpenSSL private key pem file
-  openssl_privatekey:
-    path: "{{ vault_privkey }}"
+    - name: Install python cryptography dependencies
+      pip:
+        name: "{{ item }}"
+      loop:
+        # - "pyOpenSSL"
+        - "cryptography"
 
-- name: Generate an OpenSSL CSR
-  openssl_csr:
-    path: "{{ vault_csr }}"
-    privatekey_path: "{{ vault_privkey }}"
-    common_name: "{{ vault_cn }}"
-    country_name: "{{ vault_cc }}"
-    organization_name: "{{ vault_on }}"
+    - name: Generate OpenSSL private key pem file
+      openssl_privatekey:
+        path: "{{ vault_privkey }}"
+        owner: "{{ vault_user }}"
+        group: "{{ vault_group }}"
+        mode: "{{ 0600 }}"
 
-- name: Generate a Self-Signed OpenSSL certificate
-  openssl_certificate:
-    path: "{{ vault_certfile }}"
-    privatekey_path: "{{ vault_privkey }}"
-    csr_path: "{{ vault_csr }}"
-    provider: selfsigned
+    - name: Generate an OpenSSL CSR
+      openssl_csr:
+        path: "{{ vault_csr }}"
+        owner: "{{ vault_user }}"
+        group: "{{ vault_group }}"
+        mode: "{{ 0644 }}"
+        privatekey_path: "{{ vault_privkey }}"
+        common_name: "{{ vault_cn }}"
+        country_name: "{{ vault_cc }}"
+        organization_name: "{{ vault_on }}"
 
-- name: Adjust certificate files ownerships
-  file:
-    path: "{{ vault_certs }}"
-    owner: "{{ vault_user }}"
-    group: "{{ vault_group }}"
-    mode: 0750
-    state: directory
-    recurse: yes
+    - name: Generate a Self-Signed OpenSSL certificate
+      openssl_certificate:
+        path: "{{ vault_certfile }}"
+        owner: "{{ vault_user }}"
+        group: "{{ vault_group }}"
+        mode: "{{ 0644 }}"
+        privatekey_path: "{{ vault_privkey }}"
+        csr_path: "{{ vault_csr }}"
+        provider: selfsigned
+
+    - name: Read TLS private key file
+      slurp:
+        path: "{{ vault_privkey }}"
+      register: private_key_slurp
+
+    - name: Read TLS certificate file
+      slurp:
+        path: "{{ vault_certfile }}"
+      register: cert_slurp
+
+    - name: Write TLS certificate of all other vault hosts locally
+      copy:
+        dest: "{{ hostvars[vault_host]['cert_slurp']['source'] }}"
+        content: "{{ hostvars[vault_host]['cert_slurp']['content'] | b64decode }}"
+        owner: "{{ vault_user }}"
+        group: "{{ vault_group }}"
+        mode: "{{ 0644 }}"
+      loop: "{{ ansible_play_hosts |
+        reject('equalto', inventory_hostname) | list }}"
+      loop_control:
+        loop_var: vault_host
+
+  when: not vault_tls_disable | default(false) | bool
 
 - name: Create vault server configuration
   template:
@@ -128,4 +156,3 @@
     owner: root
     group: root
     mode: 0755
-

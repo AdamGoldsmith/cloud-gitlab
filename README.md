@@ -31,7 +31,7 @@ pip install -r ./requirements_gcp.txt
 
 #### GCP credentials
 
-You will need valid credentials for GCP to be able to deploy the project.  This is covered in the [Credentials](https://docs.ansible.com/ansible/latest/scenario_guides/guide_gce.html#credentials) section of the Ansible GCP guide.  Assuming that you have created a `Service Account` and have the `.json` file downloaded you can perform the following example steps, pasting in and saving your `Service Account` .`json` contents at the `vi` step:
+You will need valid credentials for GCP to be able to deploy the project.  This is covered in the [Credentials](https://docs.ansible.com/ansible/latest/scenario_guides/guide_gce.html#credentials) section of the Ansible GCP guide.  Assuming that you have created a `Service Account` and have the `.json` file downloaded you can perform the following example steps, pasting in and saving your `Service Account`.`json` contents at the `vi` step:
 
 ```
 mkdir -p ~/gcp
@@ -74,6 +74,29 @@ The key's randomart image is:
 git clone https://github.com/AdamGoldsmith/cloud-gitlab.git
 ```
 
+#### SSH proxy & inventories
+
+It is worth noting, some people choose to connect to cloud-hosts via an SSH proxy (bastion) host to keep management and costs to a minimum.
+
+This Ansible configuration uses a mixture of static & dynamic inventories residing in an inventory directory called `inv.d` (configured in `ansible.cfg`).
+
+There is a group called `sshproxy` which has an associated `group_vars/sshproxy/vars.yml` file. In this file, if a remote Ansible host is detected on a public IP address, Ansible will attempt to connect directly to the target. However, if the host is detected on a private IP address, Ansible will set SSH Proxy arguments to connect to the target via the first SSH proxy host found in the `bastion` group.
+
+Only hosts/groups in the `sshproxy` group will be affected by this process.
+
+__Note:__ Considering that the GitLab instance has an external IP address, this configuration is opportunistically using the GitLab instance as an SSH proxy to avoid creating a dedicated bastion host and keep costs down, but it means you cannot create a vault environment without creating a GitLab instance.
+
+##### GCP
+
+*Until a method for automatically configuing the following is discovered...*
+
+To force connections via an SSH proxy, edit `inv.d/inventory.gcp.yml` by uncommenting the following lines:
+```yml
+# hostnames:
+#   - private_ip
+```
+This will force the dynamic inventory to return the internal IP addressses of instances. This will, in turn, set the appropriate SSH proxy arguments for all targets as described above.
+
 #### Running the deployment
 
 1. To create GCP instance & install GitLab
@@ -81,7 +104,6 @@ git clone https://github.com/AdamGoldsmith/cloud-gitlab.git
 ansible-playbook playbooks/site.yml --extra-vars cloud_provider=gcp
 ```
 __Note:__ Technically the `--extra-vars` is not needed as the default cloud is GCP.
-
 
 2. To install GitLab to existing instance
 ```
@@ -92,3 +114,15 @@ ansible-playbook playbooks/site.yml --extra-vars cloud_provider=gcp --tags gitla
 ```
 ansible-playbook playbooks/site.yml --extra-vars cloud_provider=gcp --tags destroy
 ```
+
+#### Limitations & known issues
+
+##### GCP
+
+1. Creating a VM without an external IP address, then re-running the create after changing the instance option to create an external IP address will create an external IP address but it will not attach it to the instance. You will need to attach this manually.
+
+2. If you change an instance option to omit creating an external IP address after you have created it, the destruction of that instance will not remove the external IP address from the project resources.
+
+3. Any shared firewall rule definitions can be deleted when destroying instances.
+
+4. Currently no Ansible module to create a Cloud NAT resource. A gateway playbook and role have been created to facilitate creating a squid proxy gateway on a VM but it is recommended to [manually enable Cloud NAT](https://cloud.google.com/nat/docs/using-nat#create_nat) for a more supported and less fiddly configuration. Currently, no automated configuration of the internal-only instances is performed as part of the gateway installation process.

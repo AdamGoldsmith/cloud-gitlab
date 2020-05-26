@@ -6,6 +6,7 @@
   gather_facts: no
   tags:
     - create
+    - vault
     - vault_create
 
   tasks:
@@ -20,3 +21,16 @@
 
     - name: Refresh inventory to ensure new instances exist in inventory
       meta: refresh_inventory
+
+- name: Wait for connectivity to new hosts
+  hosts: vault
+  gather_facts: no
+  tags:
+    - create
+    - vault
+    - vault_create
+
+  tasks:
+
+    - name: Wait for host connectivity
+      wait_for_connection:

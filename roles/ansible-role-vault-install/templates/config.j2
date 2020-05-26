@@ -2,16 +2,32 @@ ui = {{ vault_ui }}
 
 listener "tcp" {
   address         = "0.0.0.0:{{ vault_port }}"
-  cluster_address = "{{ hostvars[inventory_hostname]['ansible_all_ipv4_addresses'] | first }}:{{ vault_cluster_port }}"
-  tls_disable     = "{{ tls_disable }}"
+  cluster_address = "{{ vault_addr }}:{{ vault_cluster_port }}"
+  tls_disable     = "{{ vault_tls_disable | bool | lower }}"
+{% if not vault_tls_disable | bool %}
   tls_key_file    = "{{ vault_privkey }}"
   tls_cert_file   = "{{ vault_certfile }}"
+{% endif %}
 }
 
 storage "raft" {
   path    = "{{ vault_data_path }}/"
   node_id = "{{ hostvars[inventory_hostname]['ansible_hostname'] }}"
+{% for peer in ansible_play_hosts_all | reject('equalto', inventory_hostname) | list %}
+  retry_join {
+    leader_api_addr    = "{{ vault_protocol }}://{{ hostvars[peer]['ansible_fqdn'] }}:{{ vault_port }}"
+{% if not vault_tls_disable | bool %}
+    {# Until PR at https://github.com/hashicorp/vault/issues/8753 is released #}
+    {# leader_ca_cert     = "{{ hostvars[peer]['cert_slurp']['source'] }}" #}
+    {# leader_client_cert = "{{ vault_certfile }}" #}
+    {# leader_client_key  = "{{ vault_privkey }}" #}
+    leader_ca_cert     = "{{ hostvars[peer]['cert_slurp']['content'] | b64decode | replace('\n', '\\n') }}"
+    leader_client_cert = "{{ cert_slurp['content'] | b64decode | replace('\n', '\\n') }}"
+    leader_client_key  = "{{ private_key_slurp['content'] | b64decode | replace('\n', '\\n') }}"
+{% endif %}
+  }
+{% endfor %}
 }
 
-api_addr     = "http://{{ hostvars[inventory_hostname]['ansible_all_ipv4_addresses'] | first }}:{{ vault_port }}"
-cluster_addr = "https://{{ hostvars[inventory_hostname]['ansible_all_ipv4_addresses'] | first }}:{{ vault_cluster_port }}"
+api_addr     = "{{ vault_protocol }}://{{ vault_addr }}:{{ vault_port }}"
+cluster_addr = "{{ vault_protocol }}://{{ vault_addr }}:{{ vault_cluster_port }}"

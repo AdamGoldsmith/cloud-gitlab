@@ -6,6 +6,7 @@
   gather_facts: yes
   tags:
     - install
+    - vault
     - vault_install
 
   tasks:
