@@ -6,6 +6,7 @@
   gather_facts: yes
   tags:
     - install
+    - gitlab
     - gitlab_install
 
   pre_tasks:

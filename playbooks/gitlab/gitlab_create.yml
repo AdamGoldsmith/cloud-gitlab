@@ -6,6 +6,7 @@
   gather_facts: no
   tags:
     - create
+    - gitlab
     - gitlab_create
 
   tasks:
