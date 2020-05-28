@@ -11,12 +11,6 @@
 
   tasks:
 
-    # Create base network
-    # Create base external address (maybe do this in the instance creation
-    # task if this one cannot be shared for forwarding rules usage)
-    # Create base firewall rules
-
-    # TODO: Maybe move this from a role into tasks defined above
     - name: Deploy base cloud configuration resources
       vars:
         service_name: base
