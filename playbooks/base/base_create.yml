@@ -1,0 +1,29 @@
+---
+
+- name: Cloud provider base configuration creation
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tags:
+    - create
+    - base
+    - base_create
+
+  tasks:
+
+    # Create base network
+    # Create base external address (maybe do this in the instance creation
+    # task if this one cannot be shared for forwarding rules usage)
+    # Create base firewall rules
+
+    # TODO: Maybe move this from a role into tasks defined above
+    - name: Deploy base cloud configuration resources
+      vars:
+        service_name: base
+      include_role:
+        name: ansible-role-cloud-create
+
+  post_tasks:
+
+    - name: Refresh inventory to ensure new instances exist in inventory
+      meta: refresh_inventory

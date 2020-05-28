@@ -1,0 +1,24 @@
+---
+
+- name: Cloud provider base configuration destruction
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tags:
+    - never
+    - destroy
+    - base_destroy
+
+  tasks:
+
+    # Destroy base firewall rules
+    # Destroy base external address (maybe do this in the instance destruction
+    # task if this one cannot be shared for forwarding rules usage)
+    # Destroy base network
+
+    # TODO: Maybe move this from a role into tasks defined above
+    - name: Destroy base cloud configuration resources
+      vars:
+        service_name: base
+      include_role:
+        name: ansible-role-cloud-destroy
