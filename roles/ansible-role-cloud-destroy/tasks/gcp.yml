@@ -1,18 +1,50 @@
 ---
 
+- name: Target pool block
+  block:
+
+    - name: Destroy forwarding rules
+      gcp_compute_forwarding_rule:
+        name: "{{ service_name }}-{{ tp_item['name'] }}-forwarding-rule"
+        region: "{{ project_region }}"
+        project: "{{ gcp_data['project'] }}"
+        auth_kind: "{{ gcp_data['cred_kind'] }}"
+        service_account_file: "{{ gcp_data['cred_file'] }}"
+        state: absent
+      loop: "{{ project_data['services'][service_name]['target_pool_data'] |
+          default([]) }}"
+      loop_control:
+        loop_var: tp_item
+        label: "{{ service_name }}-{{ tp_item['name'] }}-forwarding-rule"
+
+    - name: Destroy target pools
+      gcp_compute_target_pool:
+        name: "{{ service_name }}-{{ tp_item['name'] }}-target-pool"
+        region: "{{ project_region }}"
+        project: "{{ gcp_data['project'] }}"
+        auth_kind: "{{ gcp_data['cred_kind'] }}"
+        service_account_file: "{{ gcp_data['cred_file'] }}"
+        state: absent
+      loop: "{{ project_data['services'][service_name]['target_pool_data'] |
+          default([]) }}"
+      loop_control:
+        loop_var: tp_item
+        label: "{{ service_name }}-{{ tp_item['name'] }}-target-pool"
+
+  when: project_data['services'][service_name]['target_pool_data'] is defined
+
 - name: Destroy instances
-  vars:
-    disk_name: "{{ service_name }}-{{ instance_item['name'] }}-disk"
   gcp_compute_instance:
     name: "{{ service_name }}-{{ instance_item['name'] }}-vm"
     zone: "{{ instance_item['zone'] }}"
     project: "{{ gcp_data['project'] }}"
     auth_kind: "{{ gcp_data['cred_kind'] }}"
     service_account_file: "{{ gcp_data['cred_file'] }}"
-    scopes: "{{ service_data[service_name]['scopes'] }}"
+    scopes: "{{ project_data['services'][service_name]['scopes'] }}"
     state: absent
   register: instances
-  loop: "{{ service_data[service_name]['instances'] }}"
+  loop: "{{ project_data['services'][service_name]['instances'] |
+    default([]) }}"
   loop_control:
     loop_var: instance_item
     label: "{{ service_name }}-{{ instance_item['name'] }}-vm"
@@ -20,14 +52,15 @@
 - name: Destroy external addresses
   gcp_compute_address:
     name: "{{ service_name }}-{{ address_item['name'] }}-address"
-    region: "{{ service_data['region'] }}"
+    region: "{{ project_region }}"
     project: "{{ gcp_data['project'] }}"
     auth_kind: "{{ gcp_data['cred_kind'] }}"
     service_account_file: "{{ gcp_data['cred_file'] }}"
-    scopes: "{{ service_data[service_name]['scopes'] }}"
+    scopes: "{{ project_data['services'][service_name]['scopes'] }}"
     state: absent
-  register: address
-  loop: "{{ service_data[service_name]['instances'] }}"
+  register: addresses_ext
+  loop: "{{ project_data['services'][service_name]['ext_addresses'] |
+    default([]) }}"
   loop_control:
     loop_var: address_item
     label: "{{ service_name }}-{{ address_item['name'] }}-address"
@@ -39,7 +72,8 @@
     auth_kind: "{{ gcp_data['cred_kind'] }}"
     service_account_file: "{{ gcp_data['cred_file'] }}"
     state: absent
-  loop: "{{ service_data[service_name]['fw_data'] }}"
+  loop: "{{ project_data['services'][service_name]['fw_data'] |
+    default([]) }}"
   loop_control:
     loop_var: fw_item
     label: "{{ fw_item['name'] }}"
@@ -50,7 +84,7 @@
     project: "{{ gcp_data['project'] }}"
     auth_kind: "{{ gcp_data['cred_kind'] }}"
     service_account_file: "{{ gcp_data['cred_file'] }}"
-    scopes: "{{ service_data[service_name]['scopes'] }}"
+    scopes: "{{ project_data['services'][service_name]['scopes'] }}"
     state: absent
   register: network
   # In case any other services are still using this network

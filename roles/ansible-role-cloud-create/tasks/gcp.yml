@@ -1,13 +1,15 @@
 ---
 
+# No harm creating a potentially existing network here;
+# we need the registered output to use later
 - name: Create network
   gcp_compute_network:
-    name: "{{ service_data['network'] }}-network"
+    name: "{{ project_data['network']['name'] }}-network"
     auto_create_subnetworks: yes
     project: "{{ gcp_data['project'] }}"
     auth_kind: "{{ gcp_data['cred_kind'] }}"
     service_account_file: "{{ gcp_data['cred_file'] }}"
-    scopes: "{{ service_data[service_name]['scopes'] }}"
+    scopes: "{{ project_data['services'][service_name]['scopes'] }}"
     state: present
   register: network
 
@@ -23,7 +25,8 @@
     auth_kind: "{{ gcp_data['cred_kind'] }}"
     service_account_file: "{{ gcp_data['cred_file'] }}"
     state: present
-  loop: "{{ service_data[service_name]['fw_data'] }}"
+  loop: "{{ project_data['services'][service_name]['fw_data'] |
+    default([]) }}"
   loop_control:
     loop_var: fw_item
     label: "{{ fw_item['name'] }}"
@@ -31,14 +34,30 @@
 - name: Create external addresses
   gcp_compute_address:
     name: "{{ service_name }}-{{ address_item['name'] }}-address"
-    region: "{{ service_data['region'] }}"
+    region: "{{ project_region }}"
     project: "{{ gcp_data['project'] }}"
     auth_kind: "{{ gcp_data['cred_kind'] }}"
     service_account_file: "{{ gcp_data['cred_file'] }}"
-    scopes: "{{ service_data[service_name]['scopes'] }}"
+    state: present
+  register: addresses_ext
+  loop: "{{ project_data['services'][service_name]['ext_addresses'] |
+    default([]) }}"
+  loop_control:
+    loop_var: address_item
+    label: "{{ service_name }}-{{ address_item['name'] }}-address"
+
+- name: Create external addresses per instance
+  gcp_compute_address:
+    name: "{{ service_name }}-{{ address_item['name'] }}-address"
+    region: "{{ project_region }}"
+    project: "{{ gcp_data['project'] }}"
+    auth_kind: "{{ gcp_data['cred_kind'] }}"
+    service_account_file: "{{ gcp_data['cred_file'] }}"
+    scopes: "{{ project_data['services'][service_name]['scopes'] }}"
     state: present
   register: addresses
-  loop: "{{ service_data[service_name]['instances'] }}"
+  loop: "{{ project_data['services'][service_name]['instances'] |
+    default([]) }}"
   loop_control:
     loop_var: address_item
     label: "{{ service_name }}-{{ address_item['name'] }}-address"
@@ -53,10 +72,11 @@
     project: "{{ gcp_data['project'] }}"
     auth_kind: "{{ gcp_data['cred_kind'] }}"
     service_account_file: "{{ gcp_data['cred_file'] }}"
-    scopes: "{{ service_data[service_name]['scopes'] }}"
+    scopes: "{{ project_data['services'][service_name]['scopes'] }}"
     state: present
   register: disks
-  loop: "{{ service_data[service_name]['instances'] }}"
+  loop: "{{ project_data['services'][service_name]['instances'] |
+    default([]) }}"
   loop_control:
     loop_var: instance_item
     label: "{{ service_name }}-{{ instance_item['name'] }}-disk"
@@ -83,11 +103,11 @@
     project: "{{ gcp_data['project'] }}"
     auth_kind: "{{ gcp_data['cred_kind'] }}"
     service_account_file: "{{ gcp_data['cred_file'] }}"
-    scopes: "{{ service_data[service_name]['scopes'] }}"
+    scopes: "{{ project_data['services'][service_name]['scopes'] }}"
     state: present
   register: instances
-  loop: "{{ service_data[service_name]['instances'] |
-    rejectattr('create_external_ip') | list }}"
+  loop: "{{ project_data['services'][service_name]['instances'] |
+    default([]) | rejectattr('create_external_ip') | list }}"
   loop_control:
     loop_var: instance_item
     label: "{{ service_name }}-{{ instance_item['name'] }}-vm"
@@ -122,11 +142,81 @@
     project: "{{ gcp_data['project'] }}"
     auth_kind: "{{ gcp_data['cred_kind'] }}"
     service_account_file: "{{ gcp_data['cred_file'] }}"
-    scopes: "{{ service_data[service_name]['scopes'] }}"
+    scopes: "{{ project_data['services'][service_name]['scopes'] }}"
     state: present
   register: instances_ext
-  loop: "{{ service_data[service_name]['instances'] |
-    selectattr('create_external_ip') | list }}"
+  loop: "{{ project_data['services'][service_name]['instances'] |
+    default([]) | selectattr('create_external_ip') | list }}"
   loop_control:
     loop_var: instance_item
     label: "{{ service_name }}-{{ instance_item['name'] }}-vm"
+
+- name: Target pool block
+  block:
+
+    - name: Create target pools
+      gcp_compute_target_pool:
+        name: "{{ service_name }}-{{ tp_item['name'] }}-target-pool"
+        region: "{{ project_region }}"
+        project: "{{ gcp_data['project'] }}"
+        auth_kind: "{{ gcp_data['cred_kind'] }}"
+        service_account_file: "{{ gcp_data['cred_file'] }}"
+        # Only pooling internal instances
+        instances: "{{ instances['results'] }}"
+        state: present
+      register: targetpools
+      loop: "{{ project_data['services'][service_name]['target_pool_data'] |
+          default([]) }}"
+      loop_control:
+        loop_var: tp_item
+        label: "{{ service_name }}-{{ tp_item['name'] }}-target-pool"
+
+    - name: Gather external address information
+      gcp_compute_address_info:
+        filters:
+          - "name = {{ tp_item['address']['service'] }}-{{ tp_item['address']['name'] }}-address"
+        region: "{{ project_region }}"
+        project: "{{ gcp_data['project'] }}"
+        auth_kind: "{{ gcp_data['cred_kind'] }}"
+        service_account_file: "{{ gcp_data['cred_file'] }}"
+      register: tp_addresses
+      loop: "{{ project_data['services'][service_name]['target_pool_data'] |
+          default([]) }}"
+      loop_control:
+        loop_var: tp_item
+        label: "{{ tp_item['address']['service'] }}-{{ tp_item['address']['name'] }}-address"
+
+    - name: Gather network info
+      gcp_compute_network_info:
+        filters:
+          - "name = {{ project_data['network']['name'] }}-network"
+        project: "{{ gcp_data['project'] }}"
+        auth_kind: "{{ gcp_data['cred_kind'] }}"
+        service_account_file: "{{ gcp_data['cred_file'] }}"
+      register: network
+
+    - name: Create forwarding rules
+      gcp_compute_forwarding_rule:
+        name: "{{ service_name }}-{{ tp_item['name'] }}-forwarding-rule"
+        region: "{{ project_region }}"
+        project: "{{ gcp_data['project'] }}"
+        auth_kind: "{{ gcp_data['cred_kind'] }}"
+        service_account_file: "{{ gcp_data['cred_file'] }}"
+        network: "{{ network }}"
+        target: "{{ targetpools['results'] |
+          selectattr('tp_item.name', 'equalto', tp_item['name']) |
+          list | first }}"
+        ip_protocol: "{{ tp_item['ip_protocol'] }}"
+        port_range: "{{ tp_item['port_range'] }}"
+        ip_address: "{{ tp_addresses['results'] |
+          selectattr('tp_item.name', 'equalto', tp_item['name']) |
+          map(attribute='resources') | list | first |
+          map(attribute='address') | list | first }}"
+        state: present
+      loop: "{{ project_data['services'][service_name]['target_pool_data'] |
+          default([]) }}"
+      loop_control:
+        loop_var: tp_item
+        label: "{{ service_name }}-{{ tp_item['name'] }}-forwarding-rule"
+
+  when: project_data['services'][service_name]['target_pool_data'] is defined
