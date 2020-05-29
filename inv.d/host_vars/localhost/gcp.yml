@@ -15,6 +15,8 @@ project_data:
   network:
     name: project
     region: "{{ project_region }}"
+    # TODO: May not need
+    cloud_nat: yes
   services:
     # No instances but a generic ext address & fw rules
     base:
@@ -52,35 +54,19 @@ project_data:
       instances:
         - name: 1
           disk:
-            size_gb: 50
+            size_gb: 20
             source_image: projects/centos-cloud/global/images/family/centos-8
             # source_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-1604-lts
           machine_type: n1-standard-1
           zone: "{{ project_region }}-a"
-          create_external_ip: no
-      target_pool_data:
-        - name: 1
-          ip_protocol: TCP
-          port_range: 22-22
-          # Use the external address created for 'base' named '1'
-          address:
-            service: base
-            name: 1
+          create_external_ip: yes
       scopes:
         - https://www.googleapis.com/auth/compute
-      fw_data:
-        - name: allow-bastion
-          description: Bastion service port
-          allowed:
-            - ip_protocol: tcp
-              ports:
-                - '22'
-          pri: 65534
     gitlab:
       instances:
         - name: 1
           disk:
-            size_gb: 50
+            size_gb: 20
             source_image: projects/centos-cloud/global/images/family/centos-8
             # source_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-1604-lts
           machine_type: n1-standard-1
@@ -104,18 +90,11 @@ project_data:
               ports:
                 - '4483'
           pri: 65500
-        # - name: allow-gateway
-        #   description: Network Proxy
-        #   allowed:
-        #     - ip_protocol: tcp
-        #       ports:
-        #         - '3128'
-        #   pri: 65534
     vault:
       instances:
         - name: 1
           disk:
-            size_gb: 50
+            size_gb: 20
             source_image: projects/centos-cloud/global/images/family/centos-8
             # source_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-1604-lts
           machine_type: n1-standard-1
@@ -123,7 +102,7 @@ project_data:
           create_external_ip: no
         - name: 2
           disk:
-            size_gb: 50
+            size_gb: 20
             source_image: projects/centos-cloud/global/images/family/centos-8
             # source_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-1604-lts
           machine_type: n1-standard-1
@@ -131,7 +110,7 @@ project_data:
           create_external_ip: no
         - name: 3
           disk:
-            size_gb: 50
+            size_gb: 20
             source_image: projects/centos-cloud/global/images/family/centos-8
             # source_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-1604-lts
           machine_type: n1-standard-1
