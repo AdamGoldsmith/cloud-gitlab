@@ -24,7 +24,7 @@
           register: network
 
         # If this is the only router, destroying it will disable Cloud NAT
-        - name: Destroy router
+        - name: Destroy cloud router
           gcp_compute_router:
             name: "{{ project_data['network']['name'] }}-router"
             network: "{{ network['resources'] | first }}"

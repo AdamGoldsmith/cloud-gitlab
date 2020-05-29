@@ -29,7 +29,7 @@
             service_account_file: "{{ gcp_data['cred_file'] }}"
           register: network
 
-        - name: Create router
+        - name: Create cloud router
           gcp_compute_router:
             name: "{{ project_data['network']['name'] }}-router"
             network: "{{ network['resources'] | first }}"
@@ -41,7 +41,7 @@
             state: present
 
         # TODO: Implement
-        # - name: Create Cloud NAT configuration
+        # - name: Create Cloud NAT gateway
 
       when:
         - cloud_provider is defined
