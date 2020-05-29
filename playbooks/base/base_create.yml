@@ -17,6 +17,36 @@
       include_role:
         name: ansible-role-cloud-create
 
+    - name: GCP block
+      block:
+
+        - name: Gather network info
+          gcp_compute_network_info:
+            filters:
+              - "name = {{ project_data['network']['name'] }}-network"
+            project: "{{ gcp_data['project'] }}"
+            auth_kind: "{{ gcp_data['cred_kind'] }}"
+            service_account_file: "{{ gcp_data['cred_file'] }}"
+          register: network
+
+        - name: Create router
+          gcp_compute_router:
+            name: "{{ project_data['network']['name'] }}-router"
+            network: "{{ network['resources'] | first }}"
+            description: "Project router to use with Cloud NAT"
+            region: "{{ project_region }}"
+            project: "{{ gcp_data['project'] }}"
+            auth_kind: "{{ gcp_data['cred_kind'] }}"
+            service_account_file: "{{ gcp_data['cred_file'] }}"
+            state: present
+
+        # TODO: Implement
+        # - name: Create Cloud NAT configuration
+
+      when:
+        - cloud_provider is defined
+        - cloud_provider == 'gcp'
+
   post_tasks:
 
     - name: Refresh inventory to ensure new instances exist in inventory
