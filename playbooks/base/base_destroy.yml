@@ -14,9 +14,6 @@
     - name: GCP block
       block:
 
-        # TODO: Implement
-        # - name: Destroy Cloud NAT configuration
-
         - name: Gather network info
           gcp_compute_network_info:
             filters:
@@ -26,6 +23,7 @@
             service_account_file: "{{ gcp_data['cred_file'] }}"
           register: network
 
+        # If this is the only router, destroying it will disable Cloud NAT
         - name: Destroy router
           gcp_compute_router:
             name: "{{ project_data['network']['name'] }}-router"
