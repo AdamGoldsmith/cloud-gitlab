@@ -1,6 +1,5 @@
 ---
 
-ansible_ssh_private_key_file: ~/gcp/id_rsa
 ssh_args: '-o ProxyCommand="ssh
   -o UserKnownHostsFile=/dev/null
   -o StrictHostKeyChecking=no
