@@ -13,6 +13,11 @@ gcp_ansible_group_gitlab
 [vault:children]
 gcp_ansible_group_vault
 
+[gcp:children]
+gcp_ansible_group_bastion
+gcp_ansible_group_gitlab
+gcp_ansible_group_vault
+
 [sshproxy:children]
 vault
 gitlab
