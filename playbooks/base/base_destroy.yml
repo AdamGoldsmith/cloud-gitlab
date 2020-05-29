@@ -11,31 +11,39 @@
 
   tasks:
 
-    # TODO: Implement
-    # - name: Destroy Cloud NAT configuration
+    - name: GCP block
+      block:
 
-    - name: Gather network info
-      gcp_compute_network_info:
-        filters:
-          - "name = {{ project_data['network']['name'] }}-network"
-        project: "{{ gcp_data['project'] }}"
-        auth_kind: "{{ gcp_data['cred_kind'] }}"
-        service_account_file: "{{ gcp_data['cred_file'] }}"
-      register: network
+        # TODO: Implement
+        # - name: Destroy Cloud NAT configuration
 
-    - name: Destroy router
-      gcp_compute_router:
-        name: "{{ project_data['network']['name'] }}-router"
-        network: "{{ network['resources'] | first }}"
-        region: "{{ project_region }}"
-        project: "{{ gcp_data['project'] }}"
-        auth_kind: "{{ gcp_data['cred_kind'] }}"
-        service_account_file: "{{ gcp_data['cred_file'] }}"
-        state: absent
-      loop: "{{ network['resources'] | default([]) }}"
-      loop_control:
-        loop_var: network_item
-        label: "{{ network_item['name'] }}"
+        - name: Gather network info
+          gcp_compute_network_info:
+            filters:
+              - "name = {{ project_data['network']['name'] }}-network"
+            project: "{{ gcp_data['project'] }}"
+            auth_kind: "{{ gcp_data['cred_kind'] }}"
+            service_account_file: "{{ gcp_data['cred_file'] }}"
+          register: network
+
+        - name: Destroy router
+          gcp_compute_router:
+            name: "{{ project_data['network']['name'] }}-router"
+            network: "{{ network['resources'] | first }}"
+            region: "{{ project_region }}"
+            project: "{{ gcp_data['project'] }}"
+            auth_kind: "{{ gcp_data['cred_kind'] }}"
+            service_account_file: "{{ gcp_data['cred_file'] }}"
+            state: absent
+          loop: "{{ network['resources'] | default([]) }}"
+          loop_control:
+            loop_var: network_item
+            label: "{{ network_item['name'] }}"
+
+      when:
+        - cloud_provider is defined
+        - cloud_provider == 'gcp'
+
 
     - name: Destroy base cloud configuration resources
       vars:
