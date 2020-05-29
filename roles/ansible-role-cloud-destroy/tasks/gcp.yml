@@ -42,7 +42,6 @@
     service_account_file: "{{ gcp_data['cred_file'] }}"
     scopes: "{{ project_data['services'][service_name]['scopes'] }}"
     state: absent
-  register: instances
   loop: "{{ project_data['services'][service_name]['instances'] |
     default([]) }}"
   loop_control:
@@ -58,12 +57,27 @@
     service_account_file: "{{ gcp_data['cred_file'] }}"
     scopes: "{{ project_data['services'][service_name]['scopes'] }}"
     state: absent
-  register: addresses_ext
   loop: "{{ project_data['services'][service_name]['ext_addresses'] |
     default([]) }}"
   loop_control:
     loop_var: address_item
     label: "{{ service_name }}-{{ address_item['name'] }}-address"
+
+- name: Destroy external addresses per instance
+  gcp_compute_address:
+    name: "{{ service_name }}-{{ address_item['name'] }}-address"
+    region: "{{ project_region }}"
+    project: "{{ gcp_data['project'] }}"
+    auth_kind: "{{ gcp_data['cred_kind'] }}"
+    service_account_file: "{{ gcp_data['cred_file'] }}"
+    scopes: "{{ project_data['services'][service_name]['scopes'] }}"
+    state: absent
+  loop: "{{ project_data['services'][service_name]['instances'] |
+    default([]) }}"
+  loop_control:
+    loop_var: address_item
+    label: "{{ service_name }}-{{ address_item['name'] }}-address"
+  when: address_item['create_external_ip'] | default(False) | bool
 
 - name: Destroy firewall rules
   gcp_compute_firewall:
@@ -80,12 +94,11 @@
 
 - name: Destroy network
   gcp_compute_network:
-    name: "{{ service_data['network'] }}-network"
+    name: "{{ project_data['network']['name'] }}-network"
     project: "{{ gcp_data['project'] }}"
     auth_kind: "{{ gcp_data['cred_kind'] }}"
     service_account_file: "{{ gcp_data['cred_file'] }}"
     scopes: "{{ project_data['services'][service_name]['scopes'] }}"
     state: absent
-  register: network
   # In case any other services are still using this network
   ignore_errors: true
