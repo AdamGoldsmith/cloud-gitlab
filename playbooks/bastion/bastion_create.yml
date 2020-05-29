@@ -1,0 +1,23 @@
+---
+
+- name: Cloud provider bastion deployment
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tags:
+    - create
+    - bastion
+    - bastion_create
+
+  tasks:
+
+    - name: Deploy bastion cloud instances
+      vars:
+        service_name: bastion
+      include_role:
+        name: ansible-role-cloud-create
+
+  post_tasks:
+
+    - name: Refresh inventory to ensure new instances exist in inventory
+      meta: refresh_inventory

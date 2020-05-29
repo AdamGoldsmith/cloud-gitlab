@@ -1,0 +1,9 @@
+---
+
+- name: Manage bastion cloud configuration
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+- import_playbook: bastion_create.yml
+- import_playbook: bastion_destroy.yml
