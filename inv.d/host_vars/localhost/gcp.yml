@@ -57,7 +57,7 @@ project_data:
             size_gb: 20
             source_image: projects/centos-cloud/global/images/family/centos-8
             # source_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-1604-lts
-          machine_type: n1-standard-1
+          machine_type: f1-micro
           zone: "{{ project_region }}-a"
           create_external_ip: yes
       scopes:
