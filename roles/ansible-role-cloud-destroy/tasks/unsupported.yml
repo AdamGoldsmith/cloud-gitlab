@@ -2,4 +2,4 @@
 
 - name: Display unsupported provider message
   debug:
-    msg: "{{ cloud_provider }} is not supported"
+    msg: "Cloud provider '{{ cloud_provider }}' is not supported"
