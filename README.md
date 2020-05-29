@@ -197,4 +197,3 @@ ansible-playbook playbooks/site.yml --extra-vars cloud_provider=gcp --tags destr
 4. The easiest way to allow internal instances to reach the internet for tasks such as installing/upgrading software is to enable Cloud NAT. Currently, there is no Ansible module to create a Cloud Gateway NAT resource. A Cloud Router resource called `project-router` is automatically created during the [`base_create.yml`](playbooks/base/base_create.yml) playbook, however a Cloud Gateway needs to be manually created to use it. It is recommended that as soon as the `create_base.yml` playbook has completed, you create the Cloud Gateway or else the internal instances will fail to install any software. Here's an example using the GCP Console:
 ![Alt text](images/Cloud-Gateway.jpg "Creating Cloud Gateway")
 *I am considering off-loading this step to Terraform or using the `uri` module with the correct API call but until then this is a known issue*
-
