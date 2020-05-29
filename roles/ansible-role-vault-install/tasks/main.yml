@@ -70,7 +70,6 @@
       pip:
         name: "{{ item }}"
       loop:
-        # - "pyOpenSSL"
         - "cryptography"
 
     - name: Generate OpenSSL private key pem file
