@@ -15,8 +15,6 @@ project_data:
   network:
     name: project
     region: "{{ project_region }}"
-    # TODO: May not need
-    cloud_nat: yes
   services:
     # No instances but a generic ext address & fw rules
     base:
