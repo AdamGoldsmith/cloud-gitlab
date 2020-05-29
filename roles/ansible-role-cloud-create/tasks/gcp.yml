@@ -63,6 +63,15 @@
     label: "{{ service_name }}-{{ address_item['name'] }}-address"
   when: address_item['create_external_ip'] | default(False) | bool
 
+- name: Display external addresses
+  debug:
+    msg: "{{ address_item['address'] | default('') }}"
+  loop: "{{ addresses_ext['results'] + addresses['results'] }} "
+  loop_control:
+    loop_var: address_item
+    label: "{{ address_item['name'] | default('') }}"
+  when: address_item['name'] | default('') | length
+
 - name: Create disks
   gcp_compute_disk:
     name: "{{ service_name }}-{{ instance_item['name'] }}-disk"
