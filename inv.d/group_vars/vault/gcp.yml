@@ -1,0 +1,4 @@
+---
+
+# For vault approle role
+bound_cidr: "10.128.0.0/9"

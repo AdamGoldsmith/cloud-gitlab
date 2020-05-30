@@ -1,0 +1,13 @@
+---
+
+vault_tls_disable: "false"
+vault_protocol: "{{ vault_tls_disable | bool | ternary('http', 'https') }}"
+vault_addr: "{{ ansible_fqdn }}"
+vault_port: 8200
+vault_keysfile: "~/.hashicorp_vault_keys.json"
+approle_name: "approle"
+bound_cidr: "0.0.0.0/0"
+def_lease_ttl: "10m"
+max_lease_ttl: "20m"
+token_ttl: "10m"
+max_token_ttl: "15m"
