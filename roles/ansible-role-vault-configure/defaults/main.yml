@@ -1,0 +1,12 @@
+---
+
+vault_tls_disable: "false"
+vault_protocol: "{{ vault_tls_disable | bool | ternary('http', 'https') }}"
+vault_addr: "{{ ansible_fqdn }}"
+vault_port: 8200
+vault_user: "vault"
+vault_group: "vault"
+vault_keysfile: "~/.hashicorp_vault_keys.json"
+vault_admintokenfile: "~/.hashicorp_admin_token.json"
+vault_provisionertokenfile: "~/.hashicorp_provisioner_token.json"
+audit_path: "/var/log/vault"

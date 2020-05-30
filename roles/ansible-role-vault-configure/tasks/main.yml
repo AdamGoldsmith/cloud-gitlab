@@ -1,0 +1,103 @@
+---
+
+- name: Create audit log directory
+  file:
+    path: "{{ audit_path }}"
+    owner: "{{ vault_user }}"
+    group: "{{ vault_group }}"
+    mode: 0750
+    state: directory
+
+- name: Retrieve keys locally
+  set_fact:
+    vault_keys: "{{ lookup('file','{{ vault_keysfile }}') | from_json }}"
+  delegate_to: localhost
+  become: no
+  run_once: yes
+
+- name: Enable auditing to file
+  uri:
+    url: "{{ vault_protocol }}://{{ vault_addr }}:{{ vault_port }}/v1/sys/audit/ansible"
+    validate_certs: no
+    method: PUT
+    headers:
+      X-Vault-Token: "{{ vault_keys['root_token'] }}"
+    body: "{{ lookup('template','audit_params.j2') }}"
+    body_format: json
+    return_content: yes
+    status_code: 204
+  become: no
+  register: result
+  # Don't fail if "path is already in use" message appears
+  failed_when: "result.status != 204 and 'path already in use' not in result.content"
+
+- name: Create vault policies
+  vars:
+    policies:
+      - "admin"
+      - "provisioner"
+    policy_file: "policy-{{ item }}.hcl"
+  uri:
+    url: "{{ vault_protocol }}://{{ vault_addr }}:{{ vault_port }}/v1/sys/policy/{{ item }}"
+    validate_certs: no
+    method: PUT
+    headers:
+      X-Vault-Token: "{{ vault_keys['root_token'] }}"
+    body: { "policy": "{{ lookup('file', policy_file) }}" }
+    body_format: json
+    return_content: yes
+    status_code: 204
+  become: no
+  run_once: yes
+  loop: "{{ policies }}"
+
+- name: Create and capture admin token
+  uri:
+    url: "{{ vault_protocol }}://{{ vault_addr }}:{{ vault_port }}/v1/auth/token/create"
+    validate_certs: no
+    method: POST
+    headers:
+      X-Vault-Token: "{{ vault_keys['root_token'] }}"
+    body: '{ "policies": "admin" }'
+    body_format: json
+    return_content: yes
+    status_code: 200
+  become: no
+  no_log: yes
+  register: admin_token
+  run_once: yes
+
+- name: Create and capture management tokens
+  vars:
+    policies:
+      - "provisioner"
+  uri:
+    url: "{{ vault_protocol }}://{{ vault_addr }}:{{ vault_port }}/v1/auth/token/create"
+    validate_certs: no
+    method: POST
+    headers:
+      # Use the newly created admin token to create the provisioner policy
+      X-Vault-Token: "{{ admin_token['json']['auth']['client_token'] }}"
+    body: '{ "policies": "{{ item }}" }'
+    body_format: json
+    return_content: yes
+    status_code: 200
+  become: no
+  no_log: yes
+  register: management_tokens
+  run_once: yes
+  loop: "{{ policies }}"
+
+- name: Save tokens locally
+  copy:
+    content: "{{ item[0] }}"
+    dest: "{{ item[1] }}"
+    mode: 0600
+  delegate_to: localhost
+  become: no
+  no_log: yes
+  run_once: yes
+  loop:
+    - [ "{{ admin_token['json'] }}", "{{ vault_admintokenfile }}" ]
+    - [ "{{ management_tokens['results'] | selectattr('item', 'equalto', 'provisioner') | map(attribute='json') | list | first }}", "{{ vault_provisionertokenfile }}" ]
+
