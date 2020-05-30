@@ -303,7 +303,10 @@ Generally, the following steps will be performed when no tags are specified:
     * disk & instance (x3)
     * target pool & forwarding rules associated with base external address created in step 1 for external connectivity
 6. Install & configure Vault cluster
-
+    * Install vault
+    * Configure vault
+    * Enable approle
+    * Enable sshkeysign
 
 #### Running the deployment
 
