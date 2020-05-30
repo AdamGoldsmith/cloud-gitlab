@@ -8,7 +8,7 @@ The Vault cluster is deployed using updated roles taken from [this repo](https:/
 
 #### Network Topology
 
-Here is a generalised diagramtic representation of the deployment. Management of internal instances without external-facing addresses, such as gitlab & vault instances, is performed via a bastion instance using [SSH proxy arguments](#SSH-proxy-&-inventories). A single external address with port-forwarding rules defined is used to reach the desired backend GitLab & Vault services.
+Here is a generalised diagramatic representation of the deployment. Management of internal instances without external-facing addresses, such as gitlab & vault instances, is performed via a bastion instance using [SSH proxy arguments](#SSH-proxy-&-inventories). A single external address with port-forwarding rules defined is used to reach the desired backend GitLab & Vault services.
 ![Alt text](images/GitLab-Vault-Topology.jpg "Overview of deployment")
 
 #### Supported platforms
@@ -97,11 +97,13 @@ There is a group called `sshproxy` which has an associated [`group_vars/sshproxy
 Only hosts/groups in the `sshproxy` group will be affected by this process.
 
 __Note__: To force GCP's dynamic inventory [configuration file](inv.d/inventory.gcp.yml) to return the internal IP addressses of instances, uncomment the following lines:
-```yml
+```yaml
 # hostnames:
 #   - private_ip
 ```
 More information on GCP's dynamic inventory can be found [here](https://www.diewufeiyang.com/ansible/en/plugins/inventory/gcp_compute.html)
+
+### Cloud Providers Section
 
 #### GCP
 
@@ -133,9 +135,150 @@ gcp_ansible_group_gitlab
 gcp_ansible_group_vault
 ```
 
-#### Overview of events
+#### project_data dictionary structure
 
 The majority of the network, disks and instances configuration are in a dictionary structure called `project_data` defined in the `localhost` [inventory vars file](inv.d/host_vars/localhost/gcp.yml)
+
+Let's inspect it and break it down in sections:
+
+```yaml
+project_data:
+  # Base network configuration for the project
+  network:
+    name: project
+    region: "{{ project_region }}"
+```
+The first resource created in the GCP environment is the network. Here we name it and give it a region (defined earlier in this file). The name is appended with `-network` suffix so in the example above the resulting name will be `project-network`.
+
+```yaml
+  services:
+    # No instances but a generic ext address & fw rules
+    base:
+      ext_addresses:
+        - name: 1
+      scopes:
+        - https://www.googleapis.com/auth/compute
+      fw_data:
+        - name: allow-internal
+          description: Allow all UDP/TCP ports internally
+          allowed:
+            - ip_protocol: tcp
+              ports:
+                - '0-65535'
+            - ip_protocol: udp
+              ports:
+                - '0-65535'
+            - ip_protocol: icmp
+          source_ranges:
+            - '10.128.0.0/9'
+          pri: 65534
+        - name: allow-icmp
+          description: Allow ICMP externally
+          allowed:
+            - ip_protocol: icmp
+          pri: 65534
+        - name: allow-ssh
+          description: Allow SSH externally
+          allowed:
+            - ip_protocol: tcp
+              ports:
+                - '22'
+          pri: 65534
+```
+Here we see the `services` section of the data structure where resources are defined for each particular service. In the example above, the service is `base` which has been used here to define some common network resources that need to persist independently of other services.
+
+`ext_addresses` is a list of standalone external addresses to define. In this particular case, the external address being defined here will be used by other services that are defined later (we will take a look at this further down). The final name of the external address resource becomes `<service>-<user-supplied-name>-address`, so in the example above the resulting name will be `base-1-address`.
+
+`scopes` is a list of GCP scopes to be used for defining this service
+
+`fw_data` is a list of dictionaries of the following structure:
+
+|key|value|
+|---|-----|
+|`name`|name of the firewall rule|
+|`description`|description of the firewall rule|
+|`allowed`|list of dictionaries containing the firewall rules data|
+|`ip_protocol`|protocol type (tcp, udp, icmp, esp, ah, sctp)|
+|`ports`|optional list of ports for udp/tcp (examples include `["22"]`, `["80","443"]`, and `["12345-12349"]`)
+|`source_ranges`|optional list that the firewall will apply only to traffic that has source IP address in these ranges
+|`pri`|priority of rule, lowest is preferenced (0-65534)
+See Ansible's [gcp_compute_firewall module documentation](https://docs.ansible.com/ansible/latest/modules/gcp_compute_firewall_module.html) for more details
+
+```yaml
+    bastion:
+      instances:
+        - name: 1
+          disk:
+            size_gb: 20
+            source_image: projects/centos-cloud/global/images/family/centos-8
+            # source_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-1604-lts
+          machine_type: f1-micro
+          zone: "{{ project_region }}-a"
+          create_external_ip: yes
+      scopes:
+        - https://www.googleapis.com/auth/compute
+```
+We are now looking at the `bastion` service section which has some new parts to the data structure.
+
+`instances` is a list of dictionaries describing compute VMs:
+|key|value|
+|---|-----|
+|`name`|name of the instance converted into `<service>-<user-supplied-name>-vm` (eg `bastion-1-vm`)|
+|`disk`|dictionary of data pertaining to the instance disk|
+|`size_gb`|size of disk to create (minimum 20)|
+|`source_image`|image to use for boot disk|
+|`machine_type`|VM's machine type|
+|`zone`|zone to create the instance in|
+|`create_external_ip`|boolean to create and attach a dedicated external address|
+See Ansible's [gcp_compute_instance module documentation](https://docs.ansible.com/ansible/latest/modules/gcp_compute_instance_module.html) for more details
+
+```yaml
+    gitlab:
+      instances:
+        - name: 1
+          disk:
+            size_gb: 20
+            source_image: projects/centos-cloud/global/images/family/centos-8
+            # source_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-1604-lts
+          machine_type: n1-standard-1
+          zone: "{{ project_region }}-a"
+          create_external_ip: no
+      target_pool_data:
+        - name: 1
+          ip_protocol: TCP
+          port_range: 4483-4483
+          # Use the external address created for 'base' named '1'
+          address:
+            service: base
+            name: 1
+      scopes:
+        - https://www.googleapis.com/auth/compute
+      fw_data:
+        - name: allow-gitlab
+          description: GitLab service port
+          allowed:
+            - ip_protocol: tcp
+              ports:
+                - '4483'
+          pri: 65500
+```
+We are now looking at the `gitlab` service section which has some new parts to the data structure. Notice that `create_external_ip` is set to `no` as this instance does not need to directly face the internet.
+
+`target_pool_data` is a list of dictionaries describing how to reach the backend service:
+|key|value|
+|---|-----|
+|`name`|name of the target pool converted into `<service>-<user-supplied-name>-target-pool` (eg `gitlab-1-target-pool`)|
+|`ip_protocol`|IP protocol to which this rule applies (TCP, UDP, ESP, AH, SCTP or ICMP)|
+|`port_range`|only packets addressed to ports in the specified range will be forwarded to target|
+|`address`|dictionary of data related to the associated source external address|
+|`service`|name of service used to create the external address (eg `base`)
+|`name`|name of the service's address resource (eg `base-1-address`)|
+See Ansible's [gcp_compute_target_pool module documentation](https://docs.ansible.com/ansible/latest/modules/gcp_compute_target_pool_module.html) for more details
+See Ansible's [gcp_compute_forwarding_rule module documentation](https://docs.ansible.com/ansible/latest/modules/gcp_compute_forwarding_rule_module.html) for more details
+
+There are further firewall rules defined here specific to the gitlab service to append to the common rules defined in the `base` service section.
+
+#### Overview of events
 
 Generally, the following steps will be performed when no tags are specified:
 
@@ -180,6 +323,15 @@ ansible-playbook playbooks/site.yml --extra-vars cloud_provider=gcp --tags insta
 ansible-playbook playbooks/site.yml --extra-vars cloud_provider=gcp --tags destroy
 ```
 
+#### Deployment outcome
+
+After the deployment has finished, assuming the base external ip address is 123.123.123.123, you should be able to reach the services as follows:
+
+|Service|Address|
+|-------|-------|
+|GitLab|https://123.123.123.123:4483|
+|Vault|https://123.123.123.123:8200|
+
 #### Limitations & known issues
 
 1. Both GitLab & Vault services use HTTPS connections, however this deployment implements self-signed certificates. Although there is nothing strictly wrong with this for a development environment, you will receive certificate warnings when you connect to the services. It is recommended that you install certificates signed by a trusted CA if you choose to deploy into a production environment.
@@ -197,3 +349,5 @@ ansible-playbook playbooks/site.yml --extra-vars cloud_provider=gcp --tags destr
 4. The easiest way to allow internal instances to reach the internet for tasks such as installing/upgrading software is to enable Cloud NAT. Currently, there is no Ansible module to create a Cloud Gateway NAT resource. A Cloud Router resource called `project-router` is automatically created during the [`base_create.yml`](playbooks/base/base_create.yml) playbook, however a Cloud Gateway needs to be manually created to use it. It is recommended that as soon as the `create_base.yml` playbook has completed, you create the Cloud Gateway or else the internal instances will fail to install any software. Here's an example using the GCP Console:
 ![Alt text](images/Cloud-Gateway.jpg "Creating Cloud Gateway")
 *I am considering off-loading this step to Terraform or using the `uri` module with the correct API call but until then this is a known issue*
+
+5. The load balancer doesn't have an associated health check defined for the Vault service as it uses HTTPS to query its status. There are ways to configure HTTPS health checks but I haven't pursued this yet. As it stands, when connecting to the vault service, the configured load balancer will hit any of the backend vault instances which is usually OK as Vault redirects traffic to the active instance. Problems may arise if the state of the Vault instance being targetted is unhealthy/sealed/uninitialised/etc, so be aware of this.
