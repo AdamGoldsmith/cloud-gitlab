@@ -1,0 +1,15 @@
+---
+
+- name: Cloud provider HashiCorp Vault enable sshkeysign
+  hosts: vault
+  become: yes
+  gather_facts: yes
+  tags:
+    - vault
+    - vault_sshkeysign
+
+  tasks:
+
+    - name: Run vault server sshkeysign role
+      include_role:
+        name: ansible-role-vault-sshkeysign
