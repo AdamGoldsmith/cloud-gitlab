@@ -17,8 +17,5 @@ keyed_groups:
 # is ['public_ip', 'private_ip', 'name']
 # Private is useful if you want to connect to all hosts via an SSH bastion proxy
 # https://www.diewufeiyang.com/ansible/en/plugins/inventory/gcp_compute.html
-# TODO: Write some notes in the README about this part & how dynamically determining
-# the hostname to connect to (private or public) in group_vars/sshproxy/vars.yml
-# is based on whether the target has an available public IP address or not.
 # hostnames:
 #   - private_ip

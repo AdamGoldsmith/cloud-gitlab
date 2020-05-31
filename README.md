@@ -53,7 +53,7 @@ chmod 0600 ~/gcp/gitlab-creds.json
 
 #### SSH keypair
 
-As mentioned, a keypair is required to connect to the GCP instance. By default the deployment will look in `~/gcp` for the required key.  To create the location and keypair you can work through the following example:
+As mentioned, a keypair is required to connect to the GCP instances. By default the deployment will look in `~/gcp` for the required key.  To create the location and keypair you can work through the following example:
 
 ```
 cd ~/gcp
@@ -199,9 +199,9 @@ Here we see the `services` section of the data structure where resources are def
 |`description`|description of the firewall rule|
 |`allowed`|list of dictionaries containing the firewall rules data|
 |`ip_protocol`|protocol type (tcp, udp, icmp, esp, ah, sctp)|
-|`ports`|optional list of ports for udp/tcp (examples include `["22"]`, `["80","443"]`, and `["12345-12349"]`)
-|`source_ranges`|optional list that the firewall will apply only to traffic that has source IP address in these ranges
-|`pri`|priority of rule, lowest is preferenced (0-65534)
+|`ports`|optional list of ports for udp/tcp (examples include `["22"]`, `["80","443"]`, and `["12345-12349"]`)|
+|`source_ranges`|optional list that the firewall will apply only to traffic that has source IP address in these ranges|
+|`pri`|priority of rule, lowest is preferenced (0-65534)|
 See Ansible's [gcp_compute_firewall module documentation](https://docs.ansible.com/ansible/latest/modules/gcp_compute_firewall_module.html) for more details
 
 ```yaml
@@ -271,7 +271,7 @@ We are now looking at the `gitlab` service section which has some new parts to t
 |`ip_protocol`|IP protocol to which this rule applies (TCP, UDP, ESP, AH, SCTP or ICMP)|
 |`port_range`|only packets addressed to ports in the specified range will be forwarded to target|
 |`address`|dictionary of data related to the associated source external address|
-|`service`|name of service used to create the external address (eg `base`)
+|`service`|name of service used to create the external address (eg `base`)|
 |`name`|name of the service's address resource (eg `base-1-address`)|
 See Ansible's [gcp_compute_target_pool module documentation](https://docs.ansible.com/ansible/latest/modules/gcp_compute_target_pool_module.html) for more details
 See Ansible's [gcp_compute_forwarding_rule module documentation](https://docs.ansible.com/ansible/latest/modules/gcp_compute_forwarding_rule_module.html) for more details
