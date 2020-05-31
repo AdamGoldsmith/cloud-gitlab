@@ -1,0 +1,64 @@
+---
+
+cloud_provider: gcp
+resource_action: create
+
+# GCP defaults
+gcp_data:
+  cred_file: ~/gcp/project-creds.json
+  project: project-access-123456
+  cred_kind: serviceaccount
+  ssh_user: ansible
+  ssh_pubkey: ~/gcp/id_rsa.pub
+service_name: base
+project_region: europe-west2
+project_data:
+  # Base network configuration for the project
+  network:
+    name: project
+    region: "{{ project_region }}"
+  services:
+    # No instances but a generic ext address & fw rules
+    base:
+      ext_addresses:
+        - name: 1
+      scopes:
+        - https://www.googleapis.com/auth/compute
+      fw_data:
+        - name: allow-internal
+          description: Allow all UDP/TCP ports internally
+          allowed:
+            - ip_protocol: tcp
+              ports:
+                - '0-65535'
+            - ip_protocol: udp
+              ports:
+                - '0-65535'
+            - ip_protocol: icmp
+          source_ranges:
+            - '10.128.0.0/9'
+          pri: 65534
+        - name: allow-icmp
+          description: Allow ICMP externally
+          allowed:
+            - ip_protocol: icmp
+          pri: 65534
+        - name: allow-ssh
+          description: Allow SSH externally
+          allowed:
+            - ip_protocol: tcp
+              ports:
+                - '22'
+          pri: 65534
+    # Bastion SSH proxy service
+    bastion:
+      instances:
+        - name: 1
+          disk:
+            size_gb: 20
+            source_image: projects/centos-cloud/global/images/family/centos-8
+          machine_type: f1-micro
+          zone: "{{ project_region }}-a"
+          create_external_ip: yes
+      scopes:
+        - https://www.googleapis.com/auth/compute

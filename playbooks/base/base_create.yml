@@ -14,8 +14,9 @@
     - name: Deploy base cloud configuration resources
       vars:
         service_name: base
+        resource_action: create
       include_role:
-        name: ansible-role-cloud-create
+        name: ansible-role-cloud-resources
 
     - name: GCP block
       block:

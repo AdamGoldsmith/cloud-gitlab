@@ -14,8 +14,9 @@
     - name: Deploy vault cloud instances
       vars:
         service_name: vault
+        resource_action: create
       include_role:
-        name: ansible-role-cloud-create
+        name: ansible-role-cloud-resources
 
   post_tasks:
 

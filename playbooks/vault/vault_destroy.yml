@@ -14,5 +14,6 @@
     - name: Destroy vault cloud instances
       vars:
         service_name: vault
+        resource_action: destroy
       include_role:
-        name: ansible-role-cloud-destroy
+        name: ansible-role-cloud-resources

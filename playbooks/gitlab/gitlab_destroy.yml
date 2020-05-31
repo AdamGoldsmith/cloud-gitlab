@@ -14,5 +14,6 @@
     - name: Destroy gitlab cloud instances
       vars:
         service_name: gitlab
+        resource_action: destroy
       include_role:
-        name: ansible-role-cloud-destroy
+        name: ansible-role-cloud-resources

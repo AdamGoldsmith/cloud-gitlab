@@ -14,8 +14,9 @@
     - name: Deploy gitlab cloud instances
       vars:
         service_name: gitlab
+        resource_action: create
       include_role:
-        name: ansible-role-cloud-create
+        name: ansible-role-cloud-resources
 
   post_tasks:
 
