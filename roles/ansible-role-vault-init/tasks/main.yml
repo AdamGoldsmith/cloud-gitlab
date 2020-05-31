@@ -14,7 +14,9 @@
     body: "{{ lookup('file','init_params.json') }}"
     body_format: json
     return_content: yes
-    status_code: 200
+    status_code:
+      - 200
+      - 400
   become: no
   register: vault_init
   run_once: yes
@@ -27,5 +29,9 @@
   delegate_to: localhost
   become: no
   no_log: yes
-  when: vault_init is not skipped
+  when:
+    - vault_init is not skipped
+    - vault_init['status'] != 400
+    - "'Vault is already initialized' not in
+      (vault_init['json']['errors'] | default([]))"
   run_once: yes
