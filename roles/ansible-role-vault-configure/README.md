@@ -10,16 +10,14 @@ Currently tested on these Operating Systems
 * Oracle Linux/RHEL/CentOS
 * Debian/Stretch64
 
-Requirements
-------------
+## Requirements
 
 * Ansible 2.5 or higher
 
-Role Variables
---------------
+## Role Variables
 
-defaults/main.yml
-```
+`defaults/main.yml`
+```yaml
 vault_tls_disable: "false"                                                              # Choose whether to disable TLS for vault connections (not advised)
 vault_protocol: "{{ vault_tls_disable | bool | ternary('http', 'https') }}"             # HTTP/HTTPS connection to Vault service - default HTTPS
 vault_addr: "{{ ansible_fqdn }}"							# Vault listener address
@@ -32,15 +30,13 @@ vault_provisionertokenfile: "~/.hashicorp_provisioner_token.json"			# Local file
 audit_path: "/var/log/vault"								# Audit log file directory
 ```
 
-Dependencies
-------------
+## Dependencies
 
 Requires elevated root privileges
 
-Example Playbook
-----------------
+## Example Playbook
 
-```
+```yaml
 ---
 
 - name: Configure Hashicorp Vault
@@ -52,13 +48,10 @@ Example Playbook
     - ansible-role-vault-configure
 ```
 
-License
--------
+## License
 
 MIT License
 
-Author Information
-------------------
+## Author Information
 
 Adam Goldsmith
-

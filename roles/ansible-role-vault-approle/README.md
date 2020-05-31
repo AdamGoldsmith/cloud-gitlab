@@ -9,16 +9,14 @@ Currently tested on these Operating Systems
 * Oracle Linux/RHEL/CentOS
 * Debian/Stretch64
 
-Requirements
-------------
+## Requirements
 
 * Ansible 2.5 or higher
 
-Role Variables
---------------
+## Role Variables
 
-defaults/main.yml
-```
+`defaults/main.yml`
+```yaml
 vault_tls_disable: "false"                                                      # Choose whether to disable TLS for vault connections (not advised)
 vault_protocol: "{{ vault_tls_disable | bool | ternary('http', 'https') }}"     # HTTP/HTTPS connection to Vault service - default HTTPS
 vault_addr: "{{ ansible_fqdn }}"                                                # Vault listener address
@@ -32,15 +30,13 @@ token_ttl: "10m"                                                                
 max_token_ttl: "15m"                                                            # Token max time to live
 ```
 
-Dependencies
-------------
+## Dependencies
 
 None
 
-Example Playbook
-----------------
+## Example Playbook
 
-```
+```yaml
 ---
 
 - name: Create approle in Hashicorp Vault
@@ -51,13 +47,10 @@ Example Playbook
     - ansible-role-vault-approle
 ```
 
-License
--------
+## License
 
 MIT License
 
-Author Information
-------------------
+## Author Information
 
 Adam Goldsmith
-

@@ -1,28 +1,25 @@
 # ansible-role-vault-remove
 
-Removes Hashicorp's vault by
+Removes Hashicorp's Vault by
 * Removing VAULT_ADDR system-wide profile
-* Stopping & disabling vault systemd service
-* Deleting vault systemd service configuration file
-* Removing the vault directory structure
-* Removing the vault user & group
+* Stopping & disabling Vault systemd service
+* Deleting Vault systemd service configuration file
+* Removing the Vault directory structure
+* Removing the Vault user & group
 * Removing binary vault from /usr/bin
-* Clears down backend consul KV store
 
 Currently tested on these Operating Systems
 * Oracle Linux/RHEL/CentOS
 * Debian/Stretch64
 
-Requirements
-------------
+## Requirements
 
 * Ansible 2.5 or higher
 
-Role Variables
---------------
+## Role Variables
 
-defaults/main.yml
-```
+`defaults/main.yml`
+```yaml
 vault_bin_path: "/usr/bin"				# Path to install vault binary
 vault_conf: "/etc/vault/config.hcl"			# Vault configuration file
 vault_certs: "/etc/vault/certs"				# Vault certificates directory
@@ -31,18 +28,15 @@ vault_group: "vault"					# Group for vault user
 vault_service: "vault"					# Name of the vault systemd service
 vault_profile: "/etc/profile.d/vault.sh"		# System-wide profile for setting Vault listening address
 audit_path: "/var/log/vault"				# Audit log file directory
-consul_port: 8500					# Consul listener port
 ```
 
-Dependencies
-------------
+## Dependencies
 
 Requires elevated root privileges
 
-Example Playbook
-----------------
+## Example Playbook
 
-```
+```yaml
 ---
 
 - name: Remove Hashicorp Vault
@@ -53,13 +47,10 @@ Example Playbook
     - ansible-role-vault-remove
 ```
 
-License
--------
+## License
 
 MIT License
 
-Author Information
-------------------
+## Author Information
 
 Adam Goldsmith
-

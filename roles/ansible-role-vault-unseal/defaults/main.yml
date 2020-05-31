@@ -1,6 +1,7 @@
 ---
 
-vault_protocol: "{{ vault_tls_disable | default(false) | bool | ternary('http', 'https') }}"
+vault_tls_disable: "false"
+vault_protocol: "{{ vault_tls_disable | bool | ternary('http', 'https') }}"
 vault_addr: "{{ ansible_fqdn }}"
 vault_port: 8200
 vault_service: "vault"

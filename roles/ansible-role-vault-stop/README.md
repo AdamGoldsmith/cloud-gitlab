@@ -1,34 +1,30 @@
 # ansible-role-vault-stop
 
-Stop Hashicorp's vault by
-* Stopping the vault service
+Stop Hashicorp's Vault by
+* Stopping the Vault service
 
 Currently tested on these Operating Systems
 * Oracle Linux/RHEL/CentOS
 * Debian/Stretch64
 
-Requirements
-------------
+## Requirements
 
 Ansible 2.5 or higher
 
-Role Variables
---------------
+## Role Variables
 
-defaults/main.yml
-```
+`defaults/main.yml`
+```yaml
 vault_service: vault		# Name of the vault systemd service
 ```
 
-Dependencies
-------------
+## Dependencies
 
 None
 
-Example Playbook
-----------------
+## Example Playbook
 
-```
+```yaml
 ---
 
 - name: Stop Hashicorp Vault
@@ -39,13 +35,10 @@ Example Playbook
     - ansible-role-vault-stop
 ```
 
-License
--------
+## License
 
 MIT License
 
-Author Information
-------------------
+## Author Information
 
 Adam Goldsmith
-

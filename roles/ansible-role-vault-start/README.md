@@ -1,34 +1,30 @@
 # ansible-role-vault-start
 
-Start Hashicorp's vault by
-* Starting the vault service
+Start Hashicorp's Vault by
+* Starting the Vault service
 
 Currently tested on these Operating Systems
 * Oracle Linux/RHEL/CentOS
 * Debian/Stretch64
 
-Requirements
-------------
+## Requirements
 
 Ansible 2.5 or higher
 
-Role Variables
---------------
+## Role Variables
 
-defaults/main.yml
-```
+`defaults/main.yml`
+```yaml
 vault_service: vault		# Name of the vault systemd service
 ```
 
-Dependencies
-------------
+## Dependencies
 
 None
 
-Example Playbook
-----------------
+## Example Playbook
 
-```
+```yaml
 ---
 
 - name: Start Hashicorp Vault
@@ -39,12 +35,10 @@ Example Playbook
     - ansible-role-vault-start
 ```
 
-License
--------
+## License
 
 MIT License
 
-Author Information
-------------------
+## Author Information
 
 Adam Goldsmith

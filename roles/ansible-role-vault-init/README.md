@@ -1,28 +1,24 @@
 # ansible-role-vault-init
 
 Initialise Hashicorp's vault by
-* Stopping vault systemd service
-* Recreating the vault directory structure
 * Starting vault systemd service
 * Initialise the vault
 * Save keys locally
-* Save vault token
 
 Currently tested on these Operating Systems
 * Oracle Linux/RHEL/CentOS
 * Debian/Stretch64
 
-Requirements
-------------
+## Requirements
 
 * Ansible 2.5 or higher
 
-Role Variables
---------------
+## Role Variables
 
-defaults/main.yml
-```
-vault_protocol: "{{ vault_tls_disable | default(false) | bool | ternary('http', 'https') }}"    # HTTP/HTTPS connection to Vault service - default HTTPS
+`defaults/main.yml`
+```yaml
+vault_tls_disable: "false"                                                                      # Choose whether to disable TLS for vault connections (not advised)
+vault_protocol: "{{ vault_tls_disable | bool | ternary('http', 'https') }}"                     # HTTP/HTTPS connection to Vault service - default HTTPS
 vault_addr: "{{ ansible_fqdn }}"								# Vault listener address
 vault_port: 8200										# Vault listener port
 vault_certs: "/etc/vault/certs"									# Vault certificates directory
@@ -33,15 +29,13 @@ vault_service: "vault"										# Name of the vault systemd service
 vault_keysfile: "~/.hashicorp_vault_keys.json"							# Local file storing master key shards
 ```
 
-Dependencies
-------------
+## Dependencies
 
 Requires elevated root privileges
 
-Example Playbook
-----------------
+## Example Playbook
 
-```
+```yaml
 ---
 
 - name: Initialise Hashicorp Vault
@@ -53,13 +47,10 @@ Example Playbook
     - ansible-role-vault-init
 ```
 
-License
--------
+## License
 
 MIT License
 
-Author Information
-------------------
+## Author Information
 
 Adam Goldsmith
-

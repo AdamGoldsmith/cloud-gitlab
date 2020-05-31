@@ -1,5 +1,4 @@
-Role : ansible-role-vault-sshkeysign
-====================================
+# ansible-role-vault-sshkeysign
 
 Configure Hashicorp's Vault SSH public key signing for client and host by
 * Enabling SSH secrets engine
@@ -10,21 +9,20 @@ Currently tested on these Operating Systems
 * Oracle Linux/RHEL/CentOS
 * Debian/Stretch64
 
-Requirements
-------------
+## Requirements
 
 * Ansible 2.5 or higher
 
-Role Variables
---------------
+## Role Variables
 
-defaults/main.yml
-```
+`defaults/main.yml`
+```yaml
 vault_tls_disable: "false"                                                      # Choose whether to disable TLS for vault connections (not advised)
 vault_protocol: "{{ vault_tls_disable | bool | ternary('http', 'https') }}"     # HTTP/HTTPS connection to Vault service - default HTTPS
 vault_addr: "{{ ansible_fqdn }}"                                                # Vault listener address
 vault_port: 8200                                                                # Vault listener port
 vault_keysfile: "~/.hashicorp_vault_keys.json"                                  # Local file storing master key shards
+vault_admintokenfile: "~/.hashicorp_admin_token.json"
 vault_sshkeysignertokenfile: "~/.hashicorp_sshkeysigner_token.json"             # Local file storing sshkeysigner token
 ssh_client: "ssh-client-signer"                                                 # SSH client signining secret engine name
 sshrole_name: "sshrole"                                                         # SSH client signing role name
@@ -37,15 +35,13 @@ hostrole_name: "hostrole"                                                       
 allowed_domains: "localdomain,example.com"                                      # Permitted domains
 ```
 
-Dependencies
-------------
+## Dependencies
 
 None
 
-Example Playbook
-----------------
+## Example Playbook
 
-```
+```yaml
 ---
 
 - name: Create SSH Key Signing in Hashicorp Vault
@@ -56,13 +52,10 @@ Example Playbook
     - ansible-role-vault-sshkeysign
 ```
 
-License
--------
+## License
 
 MIT License
 
-Author Information
-------------------
+## Author Information
 
 Adam Goldsmith
-

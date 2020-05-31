@@ -1,33 +1,30 @@
 # ansible-role-vault-install
 
-Installs Hashicorp's vault by
-* Downloading & unzipping vault from Hashicorp's releases site into /usr/bin
-* Creating a vault group & user
-* Creating the vault directory structure
-* Installing latest version of pyOpenSSL using pip
-* Generating Self-Signed SSL/TLS certificate
-* Creating vault systemd service
-* Starting & enabling vault systemd service
+Installs Hashicorp's Vault by
+* Downloading & unzipping Vault from Hashicorp's releases site into /usr/bin
+* Creating a Vault group & user
+* Creating the Vault directory structure
+* Installing latest version of cryptography using pip
+* Generating self-signed SSL/TLS certificates
+* Creating Vault systemd service
+* Starting & enabling Vault systemd service
 * Setting VAULT_ADDR & VAULT_CACERT in system-wide profile
 
 Currently tested on these Operating Systems
 * Oracle Linux/RHEL/CentOS 7
 * Debian/Stretch64
 
-Requirements
-------------
+## Requirements
 
 * Ansible 2.5 or higher
-* pyOpenSSL 0.17 or higher (see Known Issues section below)
 * __Centos__ : Enable EPEL repository
 
-   EPEL is not enabled in this role, try Jeff Geerling's [EPEL role](<https://galaxy.ansible.com/geerlingguy/repo-epel/>)
+  EPEL is not enabled in this role, try Jeff Geerling's [EPEL role](<https://galaxy.ansible.com/geerlingguy/repo-epel/>)
 
-Role Variables
---------------
+## Role Variables
 
-defaults/main.yml
-```
+`defaults/main.yml`
+```yaml
 vault_src: "https://releases.hashicorp.com/vault/0.10.3/vault_0.10.3_linux_amd64.zip"	# Version of vault to download from Hashicorp's website
 vault_chksum: "sha256:ffec1c201f819f47581f54c08653a8d17ec0a6699854ebd7f6625babb9e290ed"	# Vault download file checksum
 vault_bin_path: "/usr/bin"								# Path to install vault binary
@@ -54,15 +51,13 @@ vault_data_path: "/data/vault"                                                  
 vault_ui: "true"                                                                        # Enable Web UI
 ```
 
-Dependencies
-------------
+## Dependencies
 
 Requires elevated root privileges
 
-Example Playbook
-----------------
+## Example Playbook
 
-```
+```yaml
 ---
 
 - name: Install Hashicorp Vault
@@ -74,18 +69,10 @@ Example Playbook
     - ansible-role-vault-install
 ```
 
-Known Issues
-------------
-
-If you get the message "You need to have PyOpenSSL>=0.15 to generate CSRs", then it is most likely an issue with the OpenSSL package that python has imported. When pyOpenSSL is installed/upgraded via the PIP Ansible module in this playbok, it will install the python package under /usr/lib/pythonx.x/site-packages, however it is possible that another OpenSSL python package could be installed under /usr/lib64/pythonx.x/site-packages that is being loaded in preference to the higher-level package.
-In order to prevent this happening, temporarily move the directory "/usr/lib64/pythonx.x/site-packages/OpenSSL" out of the way while running this playbook.
-
-License
--------
+## License
 
 MIT License
 
-Author Information
-------------------
+## Author Information
 
 Adam Goldsmith
