@@ -37,7 +37,7 @@ locals {
     vpc_name = "your-vpc-name"
     source_image = "projects/centos-cloud/global/images/family/centos-8"
     gitlab_cidr = "10.0.1.0/24"
-    zone = "europe-west3-b"
+    zone = "europe-west2-b"
 
     instance_name = random_pet.server_name.id
     instance_type = "n1-standard-1"
