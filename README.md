@@ -107,6 +107,10 @@ More information on GCP's dynamic inventory can be found [here](https://www.diew
 
 #### GCP
 
+##### Ansible & Terraform
+
+Currently the entire project's resources can be deployed solely using Ansible apart from the Cloud NAT Gateway that cannot be created using Ansible modules (see the ["Limitations & known issues" section](#limitations-&-known-issues) for more details). There is, however, a terraform directory which is useable but the project moved on since its initial creation. I intend to revisit this and try to use terraform to perform all the resource deployments as this is really the more professional way to deploy infrastructure, especially if this project grows or requires scalability.
+
 ##### Inventory
 
 As stated, this configuration uses a mixture of static and dynamic inventory sources. Instances are created with a label key called `ansible_group` which takes the service name as a value. Inspecting the contents of the GCP dynamic inventory [configuration file](cloud-gitlab\inv.d\inventory.gcp.yml) shows the following section:
