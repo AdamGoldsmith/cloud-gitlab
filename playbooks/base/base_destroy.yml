@@ -20,7 +20,7 @@
           terraform:
             project_path: "{{ inventory_dir |
               default(ansible_inventory_sources[0])
-              }}/../terraform/{{ cloud_provider }}/vpc"
+              }}/../terraform/{{ cloud_provider }}/{{ service_name }}"
             state: absent
             lock: yes
             variables:
