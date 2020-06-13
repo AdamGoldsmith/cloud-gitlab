@@ -11,43 +11,48 @@
 
   tasks:
 
-    - name: Deploy base cloud configuration resources
-      vars:
-        service_name: base
-        resource_action: create
-      include_role:
-        name: ansible-role-cloud-resources
-
     - name: GCP block
       block:
 
-        - name: Gather network info
-          gcp_compute_network_info:
-            filters:
-              - "name = {{ project_data['network']['name'] }}-network"
+        # Use Ansible to create bucket for storing terraform remote state files
+        # TODO: May move this to terraform as it's always showing "changed" - investigate why first
+        - name: Create terraform backend storage bucket
+          gcp_storage_bucket:
+            name: "{{ gcp_data['project'] }}-tfstate"
+            location: "{{ project_region }}"
+            versioning:
+              enabled: yes
             project: "{{ gcp_data['project'] }}"
             auth_kind: "{{ gcp_data['cred_kind'] }}"
-            service_account_file: "{{ gcp_data['cred_file'] }}"
-          register: network
-
-        - name: Create cloud router
-          gcp_compute_router:
-            name: "{{ project_data['network']['name'] }}-router"
-            network: "{{ network['resources'] | first }}"
-            description: "Project router to use with Cloud NAT"
-            region: "{{ project_region }}"
-            project: "{{ gcp_data['project'] }}"
-            auth_kind: "{{ gcp_data['cred_kind'] }}"
-            service_account_file: "{{ gcp_data['cred_file'] }}"
+            service_account_file: "{{ gcp_data['cred_file'] | expanduser }}"
             state: present
 
-        # TODO: Implement
-        # - name: Create Cloud NAT gateway
+        - name: Deploy base cloud configuration resources
+          vars:
+            service_name: base
+          terraform:
+            # TODO: Move terraform "vpc" dir to "base" then uncomment following
+            # project_path: "{{ inventory_dir |
+            #   default(ansible_inventory_sources[0])
+            #   }}/../terraform/{{ cloud_provider }}/{{ service_name }}"
+            project_path: "{{ inventory_dir |
+              default(ansible_inventory_sources[0])
+              }}/../terraform/{{ cloud_provider }}/vpc"
+            state: present
+            force_init: yes
+            lock: yes
+            variables:
+              cred_file: "{{ gcp_data['cred_file'] | expanduser }}"
+              project_name: "{{ gcp_data['project'] }}"
+              region_name: "{{ project_region }}"
+              network_name: "{{ project_data['network']['name'] }}"
+            backend_config: "{{ tf_backend_config }}"
 
       when:
         - cloud_provider is defined
         - cloud_provider == 'gcp'
 
+  # TODO: necessary here?
   post_tasks:
 
     - name: Refresh inventory to ensure new instances exist in inventory

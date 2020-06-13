@@ -11,9 +11,25 @@
 
   tasks:
 
-    - name: Destroy bastion cloud instances
+    - name: Destroy bastion cloud configuration resources
+    # TODO: Clean up vars section
       vars:
         service_name: bastion
-        resource_action: destroy
-      include_role:
-        name: ansible-role-cloud-resources
+        tf_vars:
+          service_name: "{{ service_name }}"
+          cred_file: "{{ gcp_data['cred_file'] | expanduser }}"
+          project_name: "{{ gcp_data['project'] }}"
+          region_name: "{{ project_region }}"
+          network_name: "{{ project_data['network']['name'] }}"
+        tf_instance_vars: "{{ project_data['services'][service_name] }}"
+      terraform:
+        project_path: "{{ inventory_dir |
+          default(ansible_inventory_sources[0])
+          }}/../terraform/{{ cloud_provider }}/{{ service_name }}"
+        state: absent
+        lock: yes
+        variables: "{{ tf_vars | combine(tf_instance_vars) }}"
+        backend_config: "{{ tf_backend_config }}"
+      when:
+        - cloud_provider is defined
+        - cloud_provider == 'gcp'

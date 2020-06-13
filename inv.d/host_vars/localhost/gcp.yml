@@ -2,12 +2,22 @@
 
 cloud_provider: gcp
 
+# TODO: Create a dictionary to directly pass into TF for standard credentials
+# Consider converting "project" to "project_name" to help this transition
+# project_name: inspired-access-273514
+# TODO: Consider moving project name reference outside of repo (update README)
 gcp_data:
   cred_file: ~/gcp/gitlab-creds.json
   project: inspired-access-273514
   cred_kind: serviceaccount
   ssh_user: ansible
   ssh_pubkey: ~/gcp/id_rsa.pub
+
+tf_backend_config:
+  credentials: "{{ gcp_data['cred_file'] | expanduser }}"
+  bucket: "{{ gcp_data['project'] }}-tfstate"
+  # Best not to default this and risk using an undesirable remote state file!
+  prefix: "{{ service_name }}"
 
 project_region: europe-west2
 project_data:
@@ -16,12 +26,9 @@ project_data:
     name: project
     region: "{{ project_region }}"
   services:
-    # No instances but a generic ext address & fw rules
+    # No instances but a service ext address & fw rules
     base:
-      ext_addresses:
-        - name: 1
-      scopes:
-        - https://www.googleapis.com/auth/compute
+      # TODO: Consider passing these fw rules to terraform
       fw_data:
         - name: allow-internal
           description: Allow all UDP/TCP ports internally
@@ -49,17 +56,16 @@ project_data:
                 - '22'
           pri: 65534
     bastion:
-      instances:
-        - name: 1
-          disk:
-            size_gb: 20
-            source_image: projects/centos-cloud/global/images/family/centos-8
-            # source_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-1604-lts
-          machine_type: f1-micro
-          zone: "{{ project_region }}-a"
-          create_external_ip: yes
-      scopes:
-        - https://www.googleapis.com/auth/compute
+      # instances: 1
+      os_family_name: "centos-8"
+      os_project_name: "centos-cloud"
+      disk_size: 20
+      machine_type: "f1-micro"
+      instance_zone: "{{ project_region }}-a"
+      # TODO: Future conversion to instance zones for mutli-zone instances
+      # Ref: https://gist.github.com/bougyman/7be22103191552b7af622de27610e884
+      # instance_zones:
+      #   - "{{ project_region }}-a"
     gitlab:
       instances:
         - name: 1
@@ -141,3 +147,137 @@ project_data:
               ports:
                 - '8200'
           pri: 65000
+
+# TODO: Remove original project_data dictionary reference
+# once converted from Ansible to Terraform
+# project_data:
+#   # Base network configuration for the project
+#   network:
+#     name: project
+#     region: "{{ project_region }}"
+#   services:
+#     # No instances but a generic ext address & fw rules
+#     base:
+#       ext_addresses:
+#         - name: 1
+#       scopes:
+#         - https://www.googleapis.com/auth/compute
+#       fw_data:
+#         - name: allow-internal
+#           description: Allow all UDP/TCP ports internally
+#           allowed:
+#             - ip_protocol: tcp
+#               ports:
+#                 - '0-65535'
+#             - ip_protocol: udp
+#               ports:
+#                 - '0-65535'
+#             - ip_protocol: icmp
+#           source_ranges:
+#             - '10.128.0.0/9'
+#           pri: 65534
+#         - name: allow-icmp
+#           description: Allow ICMP externally
+#           allowed:
+#             - ip_protocol: icmp
+#           pri: 65534
+#         - name: allow-ssh
+#           description: Allow SSH externally
+#           allowed:
+#             - ip_protocol: tcp
+#               ports:
+#                 - '22'
+#           pri: 65534
+#     bastion:
+#       instances:
+#         - name: 1
+#           disk:
+#             size_gb: 20
+#             source_image: projects/centos-cloud/global/images/family/centos-8
+#             # source_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-1604-lts
+#           machine_type: f1-micro
+#           zone: "{{ project_region }}-a"
+#           create_external_ip: yes
+#       scopes:
+#         - https://www.googleapis.com/auth/compute
+#     gitlab:
+#       instances:
+#         - name: 1
+#           disk:
+#             size_gb: 20
+#             source_image: projects/centos-cloud/global/images/family/centos-8
+#             # source_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-1604-lts
+#           machine_type: n1-standard-1
+#           zone: "{{ project_region }}-a"
+#           create_external_ip: no
+#       target_pool_data:
+#         - name: 1
+#           ip_protocol: TCP
+#           port_range: 4483-4483
+#           # Use the external address created for 'base' named '1'
+#           address:
+#             service: base
+#             name: 1
+#       scopes:
+#         - https://www.googleapis.com/auth/compute
+#       fw_data:
+#         - name: allow-gitlab
+#           description: GitLab service port
+#           allowed:
+#             - ip_protocol: tcp
+#               ports:
+#                 - '4483'
+#           pri: 65500
+#     vault:
+#       instances:
+#         - name: 1
+#           disk:
+#             size_gb: 20
+#             source_image: projects/centos-cloud/global/images/family/centos-8
+#             # source_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-1604-lts
+#           machine_type: n1-standard-1
+#           zone: europe-west2-a
+#           create_external_ip: no
+#         - name: 2
+#           disk:
+#             size_gb: 20
+#             source_image: projects/centos-cloud/global/images/family/centos-8
+#             # source_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-1604-lts
+#           machine_type: n1-standard-1
+#           zone: europe-west2-b
+#           create_external_ip: no
+#         - name: 3
+#           disk:
+#             size_gb: 20
+#             source_image: projects/centos-cloud/global/images/family/centos-8
+#             # source_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-1604-lts
+#           machine_type: n1-standard-1
+#           zone: europe-west2-c
+#           create_external_ip: no
+#       target_pool_data:
+#         - name: 1
+#           ip_protocol: TCP
+#           port_range: 8200-8200
+#           # Use the external address created for 'base' named '1'
+#           address:
+#             service: base
+#             name: 1
+#       scopes:
+#         - https://www.googleapis.com/auth/compute
+#       fw_data:
+#         - name: allow-internal-vault
+#           description: Internal Vault traffic - replication, request forwarding & raft gossip traffic
+#           allowed:
+#             - ip_protocol: tcp
+#               ports:
+#                 - '8200-8201'
+#           source_ranges:
+#             - '10.128.0.0/9'
+#           pri: 64000
+#         - name: allow-vault-api
+#           description: External Vault API
+#           allowed:
+#             - ip_protocol: tcp
+#               ports:
+#                 - '8200'
+#           pri: 65000
