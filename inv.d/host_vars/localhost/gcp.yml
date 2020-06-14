@@ -1,14 +1,13 @@
 ---
 
 cloud_provider: gcp
-
 # TODO: Create a dictionary to directly pass into TF for standard credentials
 # project_name: inspired-access-273514
 # TODO: Consider moving project name reference outside of repo (update README)
 gcp_data:
   cred_file: ~/gcp/gitlab-creds.json
   project_name: inspired-access-273514
-  cred_kind: serviceaccount
+  auth_kind: serviceaccount
   ssh_user: ansible
   ssh_pubkey: ~/gcp/id_rsa.pub
 

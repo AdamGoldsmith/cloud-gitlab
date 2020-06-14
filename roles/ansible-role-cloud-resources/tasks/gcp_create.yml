@@ -7,7 +7,7 @@
     name: "{{ project_data['network']['name'] }}-network"
     auto_create_subnetworks: yes
     project: "{{ gcp_data['project_name'] }}"
-    auth_kind: "{{ gcp_data['cred_kind'] }}"
+    auth_kind: "{{ gcp_data['auth_kind'] }}"
     service_account_file: "{{ gcp_data['cred_file'] }}"
     scopes: "{{ project_data['services'][service_name]['scopes'] }}"
     state: present
@@ -22,7 +22,7 @@
     priority: "{{ fw_item['pri'] | default(omit) }}"
     network: "{{ network }}"
     project: "{{ gcp_data['project_name'] }}"
-    auth_kind: "{{ gcp_data['cred_kind'] }}"
+    auth_kind: "{{ gcp_data['auth_kind'] }}"
     service_account_file: "{{ gcp_data['cred_file'] }}"
     state: present
   loop: "{{ project_data['services'][service_name]['fw_data'] |
@@ -36,7 +36,7 @@
     name: "{{ service_name }}-{{ address_item['name'] }}-address"
     region: "{{ project_region }}"
     project: "{{ gcp_data['project_name'] }}"
-    auth_kind: "{{ gcp_data['cred_kind'] }}"
+    auth_kind: "{{ gcp_data['auth_kind'] }}"
     service_account_file: "{{ gcp_data['cred_file'] }}"
     state: present
   register: addresses_ext
@@ -51,7 +51,7 @@
     name: "{{ service_name }}-{{ address_item['name'] }}-address"
     region: "{{ project_region }}"
     project: "{{ gcp_data['project_name'] }}"
-    auth_kind: "{{ gcp_data['cred_kind'] }}"
+    auth_kind: "{{ gcp_data['auth_kind'] }}"
     service_account_file: "{{ gcp_data['cred_file'] }}"
     scopes: "{{ project_data['services'][service_name]['scopes'] }}"
     state: present
@@ -79,7 +79,7 @@
     source_image: "{{ instance_item['disk']['source_image'] }}"
     zone: "{{ instance_item['zone'] }}"
     project: "{{ gcp_data['project_name'] }}"
-    auth_kind: "{{ gcp_data['cred_kind'] }}"
+    auth_kind: "{{ gcp_data['auth_kind'] }}"
     service_account_file: "{{ gcp_data['cred_file'] }}"
     scopes: "{{ project_data['services'][service_name]['scopes'] }}"
     state: present
@@ -110,7 +110,7 @@
       ansible_group: "{{ service_name }}"
     zone: "{{ instance_item['zone'] }}"
     project: "{{ gcp_data['project_name'] }}"
-    auth_kind: "{{ gcp_data['cred_kind'] }}"
+    auth_kind: "{{ gcp_data['auth_kind'] }}"
     service_account_file: "{{ gcp_data['cred_file'] }}"
     scopes: "{{ project_data['services'][service_name]['scopes'] }}"
     state: present
@@ -149,7 +149,7 @@
       ansible_group: "{{ service_name }}"
     zone: "{{ instance_item['zone'] }}"
     project: "{{ gcp_data['project_name'] }}"
-    auth_kind: "{{ gcp_data['cred_kind'] }}"
+    auth_kind: "{{ gcp_data['auth_kind'] }}"
     service_account_file: "{{ gcp_data['cred_file'] }}"
     scopes: "{{ project_data['services'][service_name]['scopes'] }}"
     state: present
@@ -168,7 +168,7 @@
         name: "{{ service_name }}-{{ tp_item['name'] }}-target-pool"
         region: "{{ project_region }}"
         project: "{{ gcp_data['project_name'] }}"
-        auth_kind: "{{ gcp_data['cred_kind'] }}"
+        auth_kind: "{{ gcp_data['auth_kind'] }}"
         service_account_file: "{{ gcp_data['cred_file'] }}"
         # Only pooling internal instances
         instances: "{{ instances['results'] }}"
@@ -186,7 +186,7 @@
           - "name = {{ tp_item['address']['service'] }}-{{ tp_item['address']['name'] }}-address"
         region: "{{ project_region }}"
         project: "{{ gcp_data['project_name'] }}"
-        auth_kind: "{{ gcp_data['cred_kind'] }}"
+        auth_kind: "{{ gcp_data['auth_kind'] }}"
         service_account_file: "{{ gcp_data['cred_file'] }}"
       register: tp_addresses
       loop: "{{ project_data['services'][service_name]['target_pool_data'] |
@@ -200,7 +200,7 @@
         filters:
           - "name = {{ project_data['network']['name'] }}-network"
         project: "{{ gcp_data['project_name'] }}"
-        auth_kind: "{{ gcp_data['cred_kind'] }}"
+        auth_kind: "{{ gcp_data['auth_kind'] }}"
         service_account_file: "{{ gcp_data['cred_file'] }}"
       register: network
 
@@ -209,7 +209,7 @@
         name: "{{ service_name }}-{{ tp_item['name'] }}-forwarding-rule"
         region: "{{ project_region }}"
         project: "{{ gcp_data['project_name'] }}"
-        auth_kind: "{{ gcp_data['cred_kind'] }}"
+        auth_kind: "{{ gcp_data['auth_kind'] }}"
         service_account_file: "{{ gcp_data['cred_file'] }}"
         network: "{{ network }}"
         target: "{{ targetpools['results'] |

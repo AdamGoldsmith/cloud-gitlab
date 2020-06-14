@@ -40,7 +40,7 @@ resource_action: create                                                         
 gcp_data:                                                                       # Generic GCP credentials dictionary
   cred_file: ~/gcp/project-creds.json                                           # Path to downloaded JSON credentials file
   project: project-access-123456                                                # Project ID
-  cred_kind: serviceaccount                                                     # Type of access
+  auth_kind: serviceaccount                                                     # Type of access
   ssh_user: ansible                                                             # User Ansible will connect as to the Compute VMs
   ssh_pubkey: ~/gcp/id_rsa.pub                                                  # Path to public key used to connect with instances
 service_name: base                                                              # Service name to process in project_data dictionary

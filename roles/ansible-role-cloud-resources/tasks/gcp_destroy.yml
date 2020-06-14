@@ -8,7 +8,7 @@
         name: "{{ service_name }}-{{ tp_item['name'] }}-forwarding-rule"
         region: "{{ project_region }}"
         project: "{{ gcp_data['project_name'] }}"
-        auth_kind: "{{ gcp_data['cred_kind'] }}"
+        auth_kind: "{{ gcp_data['auth_kind'] }}"
         service_account_file: "{{ gcp_data['cred_file'] }}"
         state: absent
       loop: "{{ project_data['services'][service_name]['target_pool_data'] |
@@ -22,7 +22,7 @@
         name: "{{ service_name }}-{{ tp_item['name'] }}-target-pool"
         region: "{{ project_region }}"
         project: "{{ gcp_data['project_name'] }}"
-        auth_kind: "{{ gcp_data['cred_kind'] }}"
+        auth_kind: "{{ gcp_data['auth_kind'] }}"
         service_account_file: "{{ gcp_data['cred_file'] }}"
         state: absent
       loop: "{{ project_data['services'][service_name]['target_pool_data'] |
@@ -38,7 +38,7 @@
     name: "{{ service_name }}-{{ instance_item['name'] }}-vm"
     zone: "{{ instance_item['zone'] }}"
     project: "{{ gcp_data['project_name'] }}"
-    auth_kind: "{{ gcp_data['cred_kind'] }}"
+    auth_kind: "{{ gcp_data['auth_kind'] }}"
     service_account_file: "{{ gcp_data['cred_file'] }}"
     scopes: "{{ project_data['services'][service_name]['scopes'] }}"
     state: absent
@@ -53,7 +53,7 @@
     name: "{{ service_name }}-{{ address_item['name'] }}-address"
     region: "{{ project_region }}"
     project: "{{ gcp_data['project_name'] }}"
-    auth_kind: "{{ gcp_data['cred_kind'] }}"
+    auth_kind: "{{ gcp_data['auth_kind'] }}"
     service_account_file: "{{ gcp_data['cred_file'] }}"
     scopes: "{{ project_data['services'][service_name]['scopes'] }}"
     state: absent
@@ -68,7 +68,7 @@
     name: "{{ service_name }}-{{ address_item['name'] }}-address"
     region: "{{ project_region }}"
     project: "{{ gcp_data['project_name'] }}"
-    auth_kind: "{{ gcp_data['cred_kind'] }}"
+    auth_kind: "{{ gcp_data['auth_kind'] }}"
     service_account_file: "{{ gcp_data['cred_file'] }}"
     scopes: "{{ project_data['services'][service_name]['scopes'] }}"
     state: absent
@@ -83,7 +83,7 @@
   gcp_compute_firewall:
     name: "{{ fw_item['name'] }}"
     project: "{{ gcp_data['project_name'] }}"
-    auth_kind: "{{ gcp_data['cred_kind'] }}"
+    auth_kind: "{{ gcp_data['auth_kind'] }}"
     service_account_file: "{{ gcp_data['cred_file'] }}"
     state: absent
   loop: "{{ project_data['services'][service_name]['fw_data'] |
@@ -96,7 +96,7 @@
   gcp_compute_network:
     name: "{{ project_data['network']['name'] }}-network"
     project: "{{ gcp_data['project_name'] }}"
-    auth_kind: "{{ gcp_data['cred_kind'] }}"
+    auth_kind: "{{ gcp_data['auth_kind'] }}"
     service_account_file: "{{ gcp_data['cred_file'] }}"
     scopes: "{{ project_data['services'][service_name]['scopes'] }}"
     state: absent

@@ -7,7 +7,7 @@ resource_action: create
 gcp_data:
   cred_file: ~/gcp/project-creds.json
   project: project-access-123456
-  cred_kind: serviceaccount
+  auth_kind: serviceaccount
   ssh_user: ansible
   ssh_pubkey: ~/gcp/id_rsa.pub
 service_name: base

@@ -23,7 +23,7 @@
             versioning:
               enabled: yes
             project: "{{ gcp_data['project_name'] }}"
-            auth_kind: "{{ gcp_data['cred_kind'] }}"
+            auth_kind: "{{ gcp_data['auth_kind'] }}"
             service_account_file: "{{ gcp_data['cred_file'] | expanduser }}"
             state: present
 
