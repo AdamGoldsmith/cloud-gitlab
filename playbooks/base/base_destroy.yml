@@ -17,17 +17,17 @@
         - name: Destroy base cloud configuration resources
           vars:
             service_name: base
+            tf_vars:
+              region_name: "{{ project_region }}"
+              network_name: "{{ project_data['network']['name'] }}"
           terraform:
             project_path: "{{ inventory_dir |
               default(ansible_inventory_sources[0])
               }}/../terraform/{{ cloud_provider }}/{{ service_name }}"
             state: absent
             lock: yes
-            variables:
-              cred_file: "{{ gcp_data['cred_file'] | expanduser }}"
-              project_name: "{{ gcp_data['project_name'] }}"
-              region_name: "{{ project_region }}"
-              network_name: "{{ project_data['network']['name'] }}"
+            variables: "{{ tf_cred_data |
+              combine(tf_vars) }}"
             backend_config: "{{ tf_backend_config }}"
 
       when:

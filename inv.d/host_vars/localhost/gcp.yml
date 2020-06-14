@@ -1,8 +1,6 @@
 ---
 
 cloud_provider: gcp
-# TODO: Create a dictionary to directly pass into TF for standard credentials
-# project_name: inspired-access-273514
 # TODO: Consider moving project name reference outside of repo (update README)
 gcp_data:
   cred_file: ~/gcp/gitlab-creds.json
@@ -10,6 +8,10 @@ gcp_data:
   auth_kind: serviceaccount
   ssh_user: ansible
   ssh_pubkey: ~/gcp/id_rsa.pub
+
+tf_cred_data:
+  cred_file: "{{ gcp_data['cred_file'] | expanduser }}"
+  project_name: "{{ gcp_data['project_name'] }}"
 
 tf_backend_config:
   credentials: "{{ gcp_data['cred_file'] | expanduser }}"
@@ -54,16 +56,19 @@ project_data:
                 - '22'
           pri: 65534
     bastion:
+      # TODO: future use
       # instances: 1
-      os_family_name: "centos-8"
-      os_project_name: "centos-cloud"
+      os_family_name: centos-8
+      os_project_name: centos-cloud
       disk_size: 20
-      machine_type: "f1-micro"
+      machine_type: f1-micro
       instance_zone: "{{ project_region }}-a"
       # TODO: Future conversion to instance zones for mutli-zone instances
       # Ref: https://gist.github.com/bougyman/7be22103191552b7af622de27610e884
       # instance_zones:
       #   - "{{ project_region }}-a"
+      ssh_user: ansible
+      ssh_pubkey: ~/gcp/id_rsa.pub
     gitlab:
       instances:
         - name: 1
