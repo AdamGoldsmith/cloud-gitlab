@@ -3,19 +3,18 @@
 cloud_provider: gcp
 
 # TODO: Create a dictionary to directly pass into TF for standard credentials
-# Consider converting "project" to "project_name" to help this transition
 # project_name: inspired-access-273514
 # TODO: Consider moving project name reference outside of repo (update README)
 gcp_data:
   cred_file: ~/gcp/gitlab-creds.json
-  project: inspired-access-273514
+  project_name: inspired-access-273514
   cred_kind: serviceaccount
   ssh_user: ansible
   ssh_pubkey: ~/gcp/id_rsa.pub
 
 tf_backend_config:
   credentials: "{{ gcp_data['cred_file'] | expanduser }}"
-  bucket: "{{ gcp_data['project'] }}-tfstate"
+  bucket: "{{ gcp_data['project_name'] }}-tfstate"
   # Best not to default this and risk using an undesirable remote state file!
   prefix: "{{ service_name }}"
 

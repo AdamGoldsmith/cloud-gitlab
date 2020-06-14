@@ -7,7 +7,7 @@
       gcp_compute_forwarding_rule:
         name: "{{ service_name }}-{{ tp_item['name'] }}-forwarding-rule"
         region: "{{ project_region }}"
-        project: "{{ gcp_data['project'] }}"
+        project: "{{ gcp_data['project_name'] }}"
         auth_kind: "{{ gcp_data['cred_kind'] }}"
         service_account_file: "{{ gcp_data['cred_file'] }}"
         state: absent
@@ -21,7 +21,7 @@
       gcp_compute_target_pool:
         name: "{{ service_name }}-{{ tp_item['name'] }}-target-pool"
         region: "{{ project_region }}"
-        project: "{{ gcp_data['project'] }}"
+        project: "{{ gcp_data['project_name'] }}"
         auth_kind: "{{ gcp_data['cred_kind'] }}"
         service_account_file: "{{ gcp_data['cred_file'] }}"
         state: absent
@@ -37,7 +37,7 @@
   gcp_compute_instance:
     name: "{{ service_name }}-{{ instance_item['name'] }}-vm"
     zone: "{{ instance_item['zone'] }}"
-    project: "{{ gcp_data['project'] }}"
+    project: "{{ gcp_data['project_name'] }}"
     auth_kind: "{{ gcp_data['cred_kind'] }}"
     service_account_file: "{{ gcp_data['cred_file'] }}"
     scopes: "{{ project_data['services'][service_name]['scopes'] }}"
@@ -52,7 +52,7 @@
   gcp_compute_address:
     name: "{{ service_name }}-{{ address_item['name'] }}-address"
     region: "{{ project_region }}"
-    project: "{{ gcp_data['project'] }}"
+    project: "{{ gcp_data['project_name'] }}"
     auth_kind: "{{ gcp_data['cred_kind'] }}"
     service_account_file: "{{ gcp_data['cred_file'] }}"
     scopes: "{{ project_data['services'][service_name]['scopes'] }}"
@@ -67,7 +67,7 @@
   gcp_compute_address:
     name: "{{ service_name }}-{{ address_item['name'] }}-address"
     region: "{{ project_region }}"
-    project: "{{ gcp_data['project'] }}"
+    project: "{{ gcp_data['project_name'] }}"
     auth_kind: "{{ gcp_data['cred_kind'] }}"
     service_account_file: "{{ gcp_data['cred_file'] }}"
     scopes: "{{ project_data['services'][service_name]['scopes'] }}"
@@ -82,7 +82,7 @@
 - name: Destroy firewall rules
   gcp_compute_firewall:
     name: "{{ fw_item['name'] }}"
-    project: "{{ gcp_data['project'] }}"
+    project: "{{ gcp_data['project_name'] }}"
     auth_kind: "{{ gcp_data['cred_kind'] }}"
     service_account_file: "{{ gcp_data['cred_file'] }}"
     state: absent
@@ -95,7 +95,7 @@
 - name: Destroy network
   gcp_compute_network:
     name: "{{ project_data['network']['name'] }}-network"
-    project: "{{ gcp_data['project'] }}"
+    project: "{{ gcp_data['project_name'] }}"
     auth_kind: "{{ gcp_data['cred_kind'] }}"
     service_account_file: "{{ gcp_data['cred_file'] }}"
     scopes: "{{ project_data['services'][service_name]['scopes'] }}"

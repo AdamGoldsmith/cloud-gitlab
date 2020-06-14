@@ -18,7 +18,7 @@ For example, when deploying infrastructure related to GitLab, the following woul
     tf_vars:
       service_name: "{{ service_name }}"
       cred_file: "{{ gcp_data['cred_file'] | expanduser }}"
-      project_name: "{{ gcp_data['project'] }}"
+      project_name: "{{ gcp_data['project_name'] }}"
       region_name: "{{ project_region }}"
       network_name: "{{ project_data['network']['name'] }}"
     tf_instance_vars: "{{ project_data['services'][service_name] }}"
@@ -37,7 +37,7 @@ Note that `backend_config` is defined in `host_vars/localhost` as:
 ```yaml
 tf_backend_config:
   credentials: "{{ gcp_data['cred_file'] | expanduser }}"
-  bucket: "{{ gcp_data['project'] }}-tfstate"
+  bucket: "{{ gcp_data['project_name'] }}-tfstate"
   # Best not to default this and risk using an undesirable remote state file!
   prefix: "{{ service_name }}"
 ```
