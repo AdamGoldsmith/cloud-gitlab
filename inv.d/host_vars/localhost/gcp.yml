@@ -1,5 +1,16 @@
 ---
 
+# TODO: Rename this file to cloud.yml & convert dictionaries to have
+# cloud provider key names. eg
+# cred_data:
+#   gcp:
+#     cred_file: ~/gcp/creds.json
+#     project_name: inspired-access-273514
+#     etc
+#   aws:
+#     cred_file: ~/aws/creds.json
+#     etc
+
 cloud_provider: gcp
 # TODO: Consider moving project name reference outside of repo (update README)
 gcp_data:
@@ -70,33 +81,49 @@ project_data:
       ssh_user: ansible
       ssh_pubkey: ~/gcp/id_rsa.pub
     gitlab:
-      instances:
-        - name: 1
-          disk:
-            size_gb: 20
-            source_image: projects/centos-cloud/global/images/family/centos-8
-            # source_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-1604-lts
-          machine_type: n1-standard-1
-          zone: "{{ project_region }}-a"
-          create_external_ip: no
-      target_pool_data:
-        - name: 1
-          ip_protocol: TCP
-          port_range: 4483-4483
-          # Use the external address created for 'base' named '1'
-          address:
-            service: base
-            name: 1
-      scopes:
-        - https://www.googleapis.com/auth/compute
-      fw_data:
-        - name: allow-gitlab
-          description: GitLab service port
-          allowed:
-            - ip_protocol: tcp
-              ports:
-                - '4483'
-          pri: 65500
+      # TODO: future use
+      # instances: 1
+      os_family_name: centos-8
+      os_project_name: centos-cloud
+      disk_size: 20
+      machine_type: n1-standard-1
+      instance_zone: "{{ project_region }}-a"
+      # TODO: Future conversion to instance zones for mutli-zone instances
+      # Ref: https://gist.github.com/bougyman/7be22103191552b7af622de27610e884
+      # instance_zones:
+      #   - "{{ project_region }}-a"
+      ssh_user: ansible
+      ssh_pubkey: ~/gcp/id_rsa.pub
+      ip_protocol: TCP
+      port_range: 4483-4483
+      # port_range: "4483"
+      # instances:
+      #   - name: 1
+      #     disk:
+      #       size_gb: 20
+      #       source_image: projects/centos-cloud/global/images/family/centos-8
+      #       # source_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-1604-lts
+      #     machine_type: n1-standard-1
+      #     zone: "{{ project_region }}-a"
+      #     create_external_ip: no
+      # target_pool_data:
+      #   - name: 1
+      #     ip_protocol: TCP
+      #     port_range: 4483-4483
+      #     # Use the external address created for 'base' named '1'
+      #     address:
+      #       service: base
+      #       name: 1
+      # scopes:
+      #   - https://www.googleapis.com/auth/compute
+      # fw_data:
+      #   - name: allow-gitlab
+      #     description: GitLab service port
+      #     allowed:
+      #       - ip_protocol: tcp
+      #         ports:
+      #           - '4483'
+      #     pri: 65500
     vault:
       instances:
         - name: 1
