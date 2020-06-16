@@ -1,0 +1,41 @@
+---
+
+# Tasks file for writing terraform vars to file as workaround for
+# https://github.com/ansible/ansible/issues/51687
+# Can be removed once issue is fixed and playbooks are amended per TODO notes
+
+- name: "Write Terraform vars to JSON file block"
+  block:
+
+    - name: Create temporary vars file
+      tempfile:
+        state: file
+        # Filename MUST end in .json to work with terraform!
+        suffix: .json
+      register: tmp_vars
+
+    - name: Write terraform vars as JSON to temp file
+      copy:
+        content: "{{ tf_vars_all | to_nice_json }}"
+        dest: "{{ tmp_vars['path'] }}"
+
+    - name: "{{ (tf_state | default('present') == 'present') |
+        ternary('Deploy', 'Destroy')
+        }} {{ service_name }} cloud configuration resources"
+      terraform:
+        project_path: "{{ inventory_dir |
+          default(ansible_inventory_sources[0])
+          }}/../terraform/{{ cloud_provider }}/{{ service_name }}"
+        state: "{{ tf_state | default('present') }}"
+        force_init: "{{ (tf_state | default('present') == 'present') |
+          ternary(true, omit) }}"
+        lock: yes
+        variables_file: "{{ tmp_vars['path'] }}"
+        backend_config: "{{ tf_backend_config }}"
+
+  always:
+
+    - name: Remove temporary vars file
+      file:
+        path: "{{ tmp_vars['path'] }}"
+        state: absent
