@@ -29,10 +29,12 @@ resource "google_compute_firewall" "allow_gitlab" {
   }
 }
 
-resource "google_compute_instance" "gitlab_instance" {
-  name         = "${var.service_name}-${random_pet.server_name.id}"
+resource "google_compute_instance" "gitlab_instances" {
+  for_each = toset(var.instance_zones)
+
+  name         = "${var.service_name}-${random_pet.server_name[each.key].id}"
   machine_type = var.machine_type
-  zone         = var.instance_zone
+  zone         = each.value
 
   boot_disk {
     initialize_params {
@@ -43,10 +45,6 @@ resource "google_compute_instance" "gitlab_instance" {
   }
   network_interface {
     network    = data.google_compute_network.project_network.self_link
-    # access_config {
-    #   nat_ip = google_compute_address.service_address.address
-    #   network_tier = "STANDARD"
-    # }
   }
   labels = {
     ansible_group = var.service_name
@@ -58,9 +56,9 @@ resource "google_compute_instance" "gitlab_instance" {
 }
 
 resource "google_compute_target_pool" "gitlab_target_pool" {
-  name   = "${var.service_name}-1-target-pool"
+  name      = "${var.service_name}-1-target-pool"
   instances = [
-    "${var.instance_zone}/${google_compute_instance.gitlab_instance.name}"
+    for zone in var.instance_zones : "${zone}/${google_compute_instance.gitlab_instances[zone].name}"
   ]
 }
 

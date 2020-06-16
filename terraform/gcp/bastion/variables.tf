@@ -48,9 +48,9 @@ variable "machine_type" {
   description = "Cloud machine type"
 }
 
-variable "instance_zone" {
-  type        = string
-  description = "Zone to deploy instance"
+variable "instance_zones" {
+  type        = list(string)
+  description = "Zones to deploy instances"
 }
 
 variable "ssh_user" {
@@ -66,6 +66,7 @@ variable "ssh_pubkey" {
 }
 
 resource "random_pet" "server_name" {
+  for_each = toset(var.instance_zones)
 }
 
 # TODO: Consider potential to inject this from Ansible

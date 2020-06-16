@@ -48,15 +48,9 @@ variable "machine_type" {
   description = "Cloud machine type"
 }
 
-# variable "instance_zone" {
-#   type        = string
-#   description = "Zone to deploy instance"
-# }
-
 variable "instance_zones" {
   type        = list(string)
   description = "Zones to deploy instances"
-  # default     = ["europe-west2-a"]
 }
 
 variable "ssh_user" {
@@ -80,10 +74,6 @@ variable "port_range" {
   type        = string
   description = "Port range for target pool load balancing"
 }
-
-# TODO: Remove after testing
-# resource "random_pet" "server_name" {
-# }
 
 resource "random_pet" "server_name" {
   for_each = toset(var.instance_zones)

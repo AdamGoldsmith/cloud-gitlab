@@ -19,10 +19,12 @@ resource "google_compute_address" "mgmt_address" {
   network_tier = "STANDARD"
 }
 
-resource "google_compute_instance" "bastion_instance" {
-  name         = "${var.service_name}-${random_pet.server_name.id}"
+resource "google_compute_instance" "bastion_instances" {
+  for_each = toset(var.instance_zones)
+
+  name         = "${var.service_name}-${random_pet.server_name[each.key].id}"
   machine_type = var.machine_type
-  zone         = var.instance_zone
+  zone         = each.value
 
   boot_disk {
     initialize_params {

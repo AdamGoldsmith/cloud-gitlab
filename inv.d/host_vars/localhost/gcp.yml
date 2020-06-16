@@ -73,11 +73,8 @@ project_data:
       os_project_name: centos-cloud
       disk_size: 20
       machine_type: f1-micro
-      instance_zone: "{{ project_region }}-a"
-      # TODO: Future conversion to instance zones for mutli-zone instances
-      # Ref: https://gist.github.com/bougyman/7be22103191552b7af622de27610e884
-      # instance_zones:
-      #   - "{{ project_region }}-a"
+      instance_zones:
+        - "{{ project_region }}-a"
       ssh_user: ansible
       ssh_pubkey: ~/gcp/id_rsa.pub
     gitlab:
@@ -87,11 +84,8 @@ project_data:
       os_project_name: centos-cloud
       disk_size: 20
       machine_type: n1-standard-1
-      instance_zone: "{{ project_region }}-a"
-      # TODO: Future conversion to instance zones for mutli-zone instances
-      # Ref: https://gist.github.com/bougyman/7be22103191552b7af622de27610e884
-      # instance_zones:
-      #   - "{{ project_region }}-a"
+      instance_zones:
+        - "{{ project_region }}-a"
       ssh_user: ansible
       ssh_pubkey: ~/gcp/id_rsa.pub
       ip_protocol: TCP
@@ -131,9 +125,6 @@ project_data:
       os_project_name: centos-cloud
       disk_size: 20
       machine_type: n1-standard-1
-      # instance_zone: "{{ project_region }}-a"
-      # TODO: Future conversion to instance zones for mutli-zone instances
-      # Ref: https://gist.github.com/bougyman/7be22103191552b7af622de27610e884
       instance_zones:
         - "{{ project_region }}-a"
         - "{{ project_region }}-b"
