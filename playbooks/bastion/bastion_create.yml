@@ -11,24 +11,48 @@
 
   tasks:
 
-    - name: Deploy bastion cloud configuration resources
+    # Include tasks for writing terraform vars to file as workaround for
+    # https://github.com/ansible/ansible/issues/51687
+    # TODO: Remove this task and the included_tasks file when
+    # issue is fixed
+    - name: "Include terraform tasks"
       vars:
         service_name: bastion
+        tf_state: present
         tf_vars:
           service_name: "{{ service_name }}"
           region_name: "{{ project_region }}"
           network_name: "{{ project_data['network']['name'] }}"
-      terraform:
-        project_path: "{{ inventory_dir |
-          default(ansible_inventory_sources[0])
-          }}/../terraform/{{ cloud_provider }}/{{ service_name }}"
-        state: present
-        force_init: yes
-        lock: yes
-        variables: "{{ tf_cred_data |
+        tf_vars_all: "{{ tf_cred_data |
           combine(tf_vars) |
           combine(project_data['services'][service_name]) }}"
-        backend_config: "{{ tf_backend_config }}"
+      include_tasks:
+        file: "{{ inventory_dir |
+          default(ansible_inventory_sources[0])
+          }}/../tasks/terraform.yml"
+
+    # TODO: Uncomment task when passing variables to terraform issue is fixed
+    # https://github.com/ansible/ansible/issues/51687
+    # - name: Deploy bastion cloud configuration resources
+    #   vars:
+    #     service_name: bastion
+    #     tf_vars:
+    #       service_name: "{{ service_name }}"
+    #       region_name: "{{ project_region }}"
+    #       network_name: "{{ project_data['network']['name'] }}"
+    #     tf_vars_all: "{{ tf_cred_data |
+    #       combine(tf_vars) |
+    #       combine(project_data['services'][service_name]) }}"
+    #   terraform:
+    #     project_path: "{{ inventory_dir |
+    #       default(ansible_inventory_sources[0])
+    #       }}/../terraform/{{ cloud_provider }}/{{ service_name }}"
+    #     state: present
+    #     force_init: yes
+    #     lock: yes
+    #     variables: "{{ tf_vars_all }}"
+    #     backend_config: "{{ tf_backend_config }}"
+
       when:
         - cloud_provider is defined
         - cloud_provider == 'gcp'
@@ -37,3 +61,16 @@
 
     - name: Refresh inventory to ensure new instances exist in inventory
       meta: refresh_inventory
+
+- name: Wait for connectivity to new hosts
+  hosts: bastion
+  gather_facts: no
+  tags:
+    - create
+    - bastion
+    - bastion_create
+
+  tasks:
+
+    - name: Wait for host connectivity
+      wait_for_connection:
