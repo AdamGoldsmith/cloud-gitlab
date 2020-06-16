@@ -52,10 +52,19 @@
     #     lock: yes
     #     variables: "{{ tf_vars_all }}"
     #     backend_config: "{{ tf_backend_config }}"
+    #   register: tf_outputs
 
       when:
         - cloud_provider is defined
         - cloud_provider == 'gcp'
+
+    - name: Display Terraform outputs
+      debug:
+        msg: "{{ item['value']['value'] }}"
+      loop: "{{ tf_outputs['outputs'] | default({}) | dict2items }}"
+      loop_control:
+        label: "{{ item['key'] }}"
+      when: not item['value']['sensitive']
 
   post_tasks:
 

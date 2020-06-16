@@ -32,6 +32,7 @@
         lock: yes
         variables_file: "{{ tmp_vars['path'] }}"
         backend_config: "{{ tf_backend_config }}"
+      register: tf_outputs
 
   always:
 
