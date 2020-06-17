@@ -71,10 +71,6 @@
         - cloud_provider is defined
         - cloud_provider == 'gcp'
 
-    # - name: Display Terraform outputs
-    #   debug:
-    #     msg: "{{ tf_outputs }}"
-
     - name: Display Terraform outputs
       debug:
         msg: "{{ item['value']['value'] }}"
