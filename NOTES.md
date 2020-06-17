@@ -18,6 +18,7 @@ Rough progress tracking file
 * Remove repeated playbook tasks - maybe keep the `terraform.yml` task file. This will require setting base service data correctly in localhost `gcp.yml` file
 * Consider making the bucket creation a single one-time project initiation event - move it out of base
 * Create a bucket-removal task for complete project resource removal
+* Add health check for vault load balancer
 
 #### Done
 
