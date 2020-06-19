@@ -23,6 +23,7 @@ Here is a generalised diagramatic representation of the deployment. Management o
 * Pre-configured cloud provider credentials. For example, with GCP a service account JSON file
 * SSH key pair for connecting to newly-created instance
 * Ansible 2.7+ (tested with 2.9.4)
+* Terraform 0.12+ (tested with 0.12.26)
 
 For further information refer to the [Google Cloud Platform Guide](https://docs.ansible.com/ansible/latest/scenario_guides/guide_gce.html)
 
@@ -109,7 +110,7 @@ More information on GCP's dynamic inventory can be found [here](https://www.diew
 
 ##### Ansible & Terraform
 
-Currently the entire project's resources can be deployed solely using Ansible apart from the Cloud NAT Gateway that cannot be created using Ansible modules (see the ["Limitations & known issues" section](#limitations-&-known-issues) for more details). There is, however, a terraform directory which is useable but the project moved on since its initial creation. I intend to revisit this and try to use terraform to perform all the resource deployments as this is really the more professional way to deploy infrastructure, especially if this project grows or requires scalability.
+The entire project's infrastructure resources are deployed with Terraform via Ansible calling the `terraform` module. This way an end-to-end project deployment can be completed by running a single Ansible command. Individual components/services can be targeted by using the appropriate tags which is explained later.
 
 ##### Inventory
 
@@ -141,7 +142,7 @@ gcp_ansible_group_vault
 
 #### project_data dictionary structure
 
-The majority of the network, disks and instances configuration are in a dictionary structure called `project_data` defined in the `localhost` [inventory vars file](inv.d/host_vars/localhost/gcp.yml)
+The infrastructure resources configuration are stored in a dictionary structure called `project_data` defined in the `localhost` [inventory vars file](inv.d/host_vars/localhost/gcp.yml)
 
 Let's inspect it and break it down in sections:
 
