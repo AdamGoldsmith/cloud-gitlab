@@ -21,7 +21,7 @@ Here is a generalised diagramatic representation of the deployment. Management o
 #### Requirements
 
 * Pre-configured cloud provider credentials. For example, with GCP a service account JSON file
-* SSH key pair for connecting to newly-created instance
+* SSH key pair for connecting to newly-created instances
 * Ansible 2.7+ (tested with 2.9.4)
 * Terraform 0.12+ (tested with 0.12.26)
 
@@ -60,13 +60,13 @@ As mentioned, a keypair is required to connect to the GCP instances. By default 
 cd ~/gcp
 ssh-keygen
 Generating public/private rsa key pair.
-Enter file in which to save the key (/home/tony/.ssh/id_rsa): ./id_rsa
+Enter file in which to save the key (/home/user/.ssh/id_rsa): ./id_rsa
 Enter passphrase (empty for no passphrase):
 Enter same passphrase again:
 Your identification has been saved in ./id_rsa.
 Your public key has been saved in ./id_rsa.pub.
 The key fingerprint is:
-SHA256:1YP0ULXqssHeCO8Yc2sCsOUWAvj6aSfIcVynRRN06nM tony@CPX-ZL3E87HNB8M
+SHA256:1YP0ULXqssHeCO8Yc2sCsOUWAvj6aSfIcVynRRN06nM user@workstation
 The key's randomart image is:
 +---[RSA 2048]----+
 | .    .o..o....  |
@@ -89,7 +89,7 @@ git clone https://github.com/AdamGoldsmith/cloud-gitlab.git
 
 #### SSH proxy & inventories
 
-It is worth noting, I have chosen to connect to cloud-hosts via an SSH proxy (bastion) host to keep management and costs to a minimum.
+It is worth noting, connections to cloud-hosts are made via an SSH proxy (bastion) host to keep management and costs to a minimum.
 
 This Ansible configuration uses a mixture of static & dynamic inventories residing in an inventory directory called `inv.d` (configured in [`ansible.cfg`](ansible.cfg)).
 
