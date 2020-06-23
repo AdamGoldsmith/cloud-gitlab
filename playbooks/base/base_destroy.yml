@@ -20,9 +20,9 @@
         service_name: base
         tf_state: absent
         tf_vars:
-          region_name: "{{ project_region }}"
+          region_name: "{{ project_region[cloud_provider] }}"
           network_name: "{{ project_data['network']['name'] }}"
-        tf_vars_all: "{{ tf_cred_data |
+        tf_vars_all: "{{ tf_cred_data[cloud_provider] |
           combine(tf_vars) }}"
       include_tasks:
         file: "{{ inventory_dir |
@@ -35,9 +35,9 @@
     #   vars:
     #     service_name: base
     #     tf_vars:
-    #       region_name: "{{ project_region }}"
+    #       region_name: "{{ project_region[cloud_provider] }}"
     #       network_name: "{{ project_data['network']['name'] }}"
-    #     tf_vars_all: "{{ tf_cred_data |
+    #     tf_vars_all: "{{ tf_cred_data[cloud_provider] |
     #       combine(tf_vars) }}"
     #   terraform:
     #     project_path: "{{ inventory_dir |
@@ -46,7 +46,7 @@
     #     state: absent
     #     lock: yes
     #     variables: "{{ tf_vars_all }}"
-    #     backend_config: "{{ tf_backend_config }}"
+    #     backend_config: "{{ tf_backend_config[cloud_provider] }}"
 
       when:
         - cloud_provider is defined
@@ -58,13 +58,13 @@
     # # Use Ansible to destroy bucket for storing terraform remote state files.
     # - name: Destroy terraform backend storage bucket
     #   gcp_storage_bucket:
-    #     name: "{{ gcp_data['project_name'] }}-tfstate"
-    #     location: "{{ project_region }}"
+    #     name: "{{ cred_data[cloud_provider]['project_name'] }}-tfstate"
+    #     location: "{{ project_region[cloud_provider] }}"
     #     versioning:
     #       enabled: yes
-    #     project: "{{ gcp_data['project_name'] }}"
-    #     auth_kind: "{{ gcp_data['auth_kind'] }}"
-    #     service_account_file: "{{ gcp_data['cred_file'] }}"
+    #     project: "{{ cred_data[cloud_provider]['project_name'] }}"
+    #     auth_kind: "{{ cred_data[cloud_provider]['auth_kind'] }}"
+    #     service_account_file: "{{ cred_data[cloud_provider]['cred_file'] }}"
     #     state: absent
 
     # - pause:

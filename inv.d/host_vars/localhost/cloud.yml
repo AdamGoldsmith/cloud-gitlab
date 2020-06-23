@@ -1,0 +1,67 @@
+---
+
+cloud_provider: gcp
+# TODO: Consider moving project name reference outside of repo (update README)
+cred_data:
+  gcp:
+    cred_file: ~/gcp/gitlab-creds.json
+    project_name: inspired-access-273514
+    auth_kind: serviceaccount
+    ssh_user: ansible
+    ssh_pubkey: ~/gcp/id_rsa.pub
+
+tf_cred_data:
+  gcp:
+    cred_file: "{{ cred_data[cloud_provider]['cred_file'] | expanduser }}"
+    project_name: "{{ cred_data[cloud_provider]['project_name'] }}"
+
+tf_backend_config:
+  gcp:
+    credentials: "{{ cred_data[cloud_provider]['cred_file'] | expanduser }}"
+    bucket: "{{ cred_data[cloud_provider]['project_name'] }}-tfstate"
+    # Best not to default this and risk using an undesirable remote state file!
+    prefix: "{{ service_name }}"
+
+project_region:
+  gcp:
+    europe-west2
+# TODO: Expand structure to handle cloud providers
+project_data:
+  # Base network configuration for the project
+  network:
+    name: project
+    region: "{{ project_region[cloud_provider] }}"
+  services:
+    bastion:
+      os_family_name: centos-8
+      os_project_name: centos-cloud
+      disk_size: 20
+      machine_type: f1-micro
+      instance_zones:
+        - "{{ project_region[cloud_provider] }}-a"
+      ssh_user: "{{ cred_data[cloud_provider]['ssh_user'] }}"
+      ssh_pubkey: "{{ cred_data[cloud_provider]['ssh_pubkey'] }}"
+    gitlab:
+      os_family_name: centos-8
+      os_project_name: centos-cloud
+      disk_size: 20
+      machine_type: n1-standard-1
+      instance_zones:
+        - "{{ project_region[cloud_provider] }}-a"
+      ssh_user: "{{ cred_data[cloud_provider]['ssh_user'] }}"
+      ssh_pubkey: "{{ cred_data[cloud_provider]['ssh_pubkey'] }}"
+      ip_protocol: TCP
+      port_range: 4483-4483
+    vault:
+      os_family_name: centos-8
+      os_project_name: centos-cloud
+      disk_size: 20
+      machine_type: n1-standard-1
+      instance_zones:
+        - "{{ project_region[cloud_provider] }}-a"
+        - "{{ project_region[cloud_provider] }}-b"
+        - "{{ project_region[cloud_provider] }}-c"
+      ssh_user: "{{ cred_data[cloud_provider]['ssh_user'] }}"
+      ssh_pubkey: "{{ cred_data[cloud_provider]['ssh_pubkey'] }}"
+      ip_protocol: TCP
+      port_range: 8200-8200

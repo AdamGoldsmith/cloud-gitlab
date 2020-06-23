@@ -140,8 +140,36 @@ gcp_ansible_group_gitlab
 gcp_ansible_group_vault
 ```
 
-#### project_data dictionary structure
+#### Cloud project variables file
+Cloud credential references and project services data are stored in localhost's inventory vars file `inv.d/host_vars/localhost/cloud.yml`. Each cloud provider's specific data is usually referenced by a dictionary with a key of the cloud provider's name. Here are more detailed sections of that file.
 
+##### `cloud_provider`
+A default cloud provider of `gcp` is set here.
+
+```yaml
+cloud_provider: gcp
+```
+##### `cred_data`
+Reference cloud provider credentials data using the `cred_data` dictionary, with a key name of the cloud provider.
+
+```yaml
+cred_data:
+  gcp:
+    cred_file: ~/gcp/gitlab-creds.json
+    project_name: inspired-access-273514
+    auth_kind: serviceaccount
+    ssh_user: ansible
+    ssh_pubkey: ~/gcp/id_rsa.pub
+```
+|key|value|
+|---|-----|
+|`cred_file`|path to file containing GCP connection credentials (usually JSON)|
+|`project_name`|unique name of project defined in GCP|
+|`auth_kind`|type of authentication being used|
+|`ssh_user`|user name used for SSH connections to instances|
+|`ssh_pubkey`|path to public key file used to authenticate `ssh_user` on instances|
+
+##### `project_data`
 The infrastructure resources configuration are stored in a dictionary structure called `project_data` defined in the `localhost` [inventory vars file](inv.d/host_vars/localhost/gcp.yml)
 
 Let's inspect it and break it down in sections:

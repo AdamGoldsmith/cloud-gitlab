@@ -21,9 +21,9 @@
         tf_state: present
         tf_vars:
           service_name: "{{ service_name }}"
-          region_name: "{{ project_region }}"
+          region_name: "{{ project_region[cloud_provider] }}"
           network_name: "{{ project_data['network']['name'] }}"
-        tf_vars_all: "{{ tf_cred_data |
+        tf_vars_all: "{{ tf_cred_data[cloud_provider] |
           combine(tf_vars) |
           combine(project_data['services'][service_name]) }}"
       include_tasks:
@@ -38,9 +38,9 @@
     #     service_name: bastion
     #     tf_vars:
     #       service_name: "{{ service_name }}"
-    #       region_name: "{{ project_region }}"
+    #       region_name: "{{ project_region[cloud_provider] }}"
     #       network_name: "{{ project_data['network']['name'] }}"
-    #     tf_vars_all: "{{ tf_cred_data |
+    #     tf_vars_all: "{{ tf_cred_data[cloud_provider] |
     #       combine(tf_vars) |
     #       combine(project_data['services'][service_name]) }}"
     #   terraform:
@@ -51,7 +51,7 @@
     #     force_init: yes
     #     lock: yes
     #     variables: "{{ tf_vars_all }}"
-    #     backend_config: "{{ tf_backend_config }}"
+    #     backend_config: "{{ tf_backend_config[cloud_provider] }}"
     #   register: tf_outputs
 
       when:

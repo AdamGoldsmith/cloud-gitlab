@@ -19,13 +19,14 @@
         # TODO: Probably move this to a "project init" area
         - name: Create terraform backend storage bucket
           gcp_storage_bucket:
-            name: "{{ gcp_data['project_name'] }}-tfstate"
-            location: "{{ project_region }}"
+            name: "{{ cred_data[cloud_provider]['project_name'] }}-tfstate"
+            location: "{{ project_region[cloud_provider] }}"
             versioning:
               enabled: yes
-            project: "{{ gcp_data['project_name'] }}"
-            auth_kind: "{{ gcp_data['auth_kind'] }}"
-            service_account_file: "{{ gcp_data['cred_file'] | expanduser }}"
+            project: "{{ cred_data[cloud_provider]['project_name'] }}"
+            auth_kind: "{{ cred_data[cloud_provider]['auth_kind'] }}"
+            service_account_file: "{{ cred_data[cloud_provider]['cred_file'] |
+              expanduser }}"
             state: present
 
         # Include tasks for writing terraform vars to file as workaround for
@@ -37,9 +38,9 @@
             service_name: base
             tf_state: present
             tf_vars:
-              region_name: "{{ project_region }}"
+              region_name: "{{ project_region[cloud_provider] }}"
               network_name: "{{ project_data['network']['name'] }}"
-            tf_vars_all: "{{ tf_cred_data |
+            tf_vars_all: "{{ tf_cred_data[cloud_provider] |
               combine(tf_vars) }}"
           include_tasks:
             file: "{{ inventory_dir |
@@ -52,9 +53,9 @@
         #   vars:
         #     service_name: base
         #     tf_vars:
-        #       region_name: "{{ project_region }}"
+        #       region_name: "{{ project_region[cloud_provider] }}"
         #       network_name: "{{ project_data['network']['name'] }}"
-        #     tf_vars_all: "{{ tf_cred_data |
+        #     tf_vars_all: "{{ tf_cred_data[cloud_provider] |
         #       combine(tf_vars) }}"
         #   terraform:
         #     project_path: "{{ inventory_dir |
@@ -64,7 +65,7 @@
         #     force_init: yes
         #     lock: yes
         #     variables: "{{ tf_vars_all }}"
-        #     backend_config: "{{ tf_backend_config }}"
+        #     backend_config: "{{ tf_backend_config[cloud_provider] }}"
         #   register: tf_outputs
 
       when:

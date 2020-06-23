@@ -31,7 +31,7 @@
           ternary(true, omit) }}"
         lock: yes
         variables_file: "{{ tmp_vars['path'] }}"
-        backend_config: "{{ tf_backend_config }}"
+        backend_config: "{{ tf_backend_config[cloud_provider] }}"
       register: tf_outputs
 
   always:
