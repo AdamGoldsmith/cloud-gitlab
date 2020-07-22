@@ -15,15 +15,11 @@ storage "raft" {
   node_id = "{{ hostvars[inventory_hostname]['ansible_hostname'] }}"
 {% for peer in ansible_play_hosts_all | reject('equalto', inventory_hostname) | list %}
   retry_join {
-    leader_api_addr    = "{{ vault_protocol }}://{{ hostvars[peer]['ansible_fqdn'] }}:{{ vault_port }}"
+    leader_api_addr         = "{{ vault_protocol }}://{{ hostvars[peer]['ansible_fqdn'] }}:{{ vault_port }}"
 {% if not vault_tls_disable | bool %}
-    {# Until PR at https://github.com/hashicorp/vault/issues/8753 is released #}
-    {# leader_ca_cert     = "{{ hostvars[peer]['cert_slurp']['source'] }}" #}
-    {# leader_client_cert = "{{ vault_certfile }}" #}
-    {# leader_client_key  = "{{ vault_privkey }}" #}
-    leader_ca_cert     = "{{ hostvars[peer]['cert_slurp']['content'] | b64decode | replace('\n', '\\n') }}"
-    leader_client_cert = "{{ cert_slurp['content'] | b64decode | replace('\n', '\\n') }}"
-    leader_client_key  = "{{ private_key_slurp['content'] | b64decode | replace('\n', '\\n') }}"
+    leader_ca_cert_file     = "{{ hostvars[peer]['cert_slurp']['source'] }}"
+    leader_client_cert_file = "{{ vault_certfile }}"
+    leader_client_key_file  = "{{ vault_privkey }}"
 {% endif %}
   }
 {% endfor %}
