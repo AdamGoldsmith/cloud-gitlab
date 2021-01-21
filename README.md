@@ -8,7 +8,7 @@ The Vault cluster is deployed using updated roles taken from [this repo](https:/
 
 #### Network Topology
 
-Here is a generalised diagramatic representation of the deployment. Management of internal instances without external-facing addresses, such as gitlab & vault instances, is performed via a bastion instance using [SSH proxy arguments](#SSH-proxy-&-inventories). A single external address with port-forwarding rules defined is used to reach the desired backend GitLab & Vault services.
+Here is a generalised diagramatic representation of the deployment. Management of internal instances without external-facing addresses, such as gitlab & vault instances, is performed via a bastion instance using [SSH proxy arguments](#SSH-proxy--inventories). A single external address with port-forwarding rules defined is used to reach the desired backend GitLab & Vault services.
 ![Alt text](images/GitLab-Vault-Topology.jpg "Overview of deployment")
 
 #### Supported platforms
