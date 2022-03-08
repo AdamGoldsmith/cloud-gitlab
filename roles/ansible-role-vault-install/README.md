@@ -25,11 +25,12 @@ Currently tested on these Operating Systems
 
 `defaults/main.yml`
 ```yaml
-vault_src: "https://releases.hashicorp.com/vault/0.10.3/vault_0.10.3_linux_amd64.zip"	# Version of vault to download from Hashicorp's website
-vault_chksum: "sha256:ffec1c201f819f47581f54c08653a8d17ec0a6699854ebd7f6625babb9e290ed"	# Vault download file checksum
+vault_src: "https://releases.hashicorp.com/vault/0.10.3/vault_1.9.3_linux_amd64.zip"	# Version of vault to download from Hashicorp's website
+vault_chksum: "sha256:16059f245fb4df2800fe6ba320ea66aba9c2615348e37bcfd42754591a528639"	# Vault download file checksum
 vault_bin_path: "/usr/bin"								# Path to install vault binary
 vault_conf: "/etc/vault/config.hcl"							# Vault configuration file
 vault_tls_disable: "false"								# Choose whether to disable TLS for vault connections (not advised)
+vault_mlock_disable: "false"              # Disbale mlock - sometimes required for the infrastructure (eg LXD)
 vault_certs: "/etc/vault/certs"								# Vault certificates directory
 vault_cn: "{{ ansible_fqdn }}"								# CSR Common Name
 vault_cc: "UK"										# CSR Country Code

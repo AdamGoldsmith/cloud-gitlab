@@ -1,4 +1,5 @@
 ui = {{ vault_ui }}
+disable_mlock = {{ vault_mlock_disable | default('false') }}
 
 listener "tcp" {
   address         = "0.0.0.0:{{ vault_port }}"
