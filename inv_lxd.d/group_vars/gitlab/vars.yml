@@ -1,0 +1,7 @@
+---
+
+external_roles:
+  - name: ansible-role-gitlab
+    source: https://github.com/geerlingguy/ansible-role-gitlab.git
+    version: 2.5.3
+gitlab_external_url: "https://gitlab.example.com:4483/"
