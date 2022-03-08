@@ -27,7 +27,7 @@
     creates: "{{ vault_bin_path }}/vault"
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
     keep_newer: true
 
 - name: Create vault group
@@ -51,7 +51,7 @@
     path: "{{ item }}"
     owner: "{{ vault_user }}"
     group: "{{ vault_group }}"
-    mode: 0750
+    mode: "0750"
     state: directory
   loop:
     - "{{ vault_conf | dirname }}"
@@ -91,14 +91,14 @@
         path: "{{ vault_privkey }}"
         owner: "{{ vault_user }}"
         group: "{{ vault_group }}"
-        mode: "{{ 0600 }}"
+        mode: "0600"
 
     - name: Generate an OpenSSL CSR
       openssl_csr:
         path: "{{ vault_csr }}"
         owner: "{{ vault_user }}"
         group: "{{ vault_group }}"
-        mode: "{{ 0644 }}"
+        mode: "0644"
         privatekey_path: "{{ vault_privkey }}"
         common_name: "{{ vault_cn }}"
         country_name: "{{ vault_cc }}"
@@ -109,7 +109,7 @@
         path: "{{ vault_certfile }}"
         owner: "{{ vault_user }}"
         group: "{{ vault_group }}"
-        mode: "{{ 0644 }}"
+        mode: "0644"
         privatekey_path: "{{ vault_privkey }}"
         csr_path: "{{ vault_csr }}"
         provider: selfsigned
@@ -130,7 +130,7 @@
         content: "{{ hostvars[vault_host]['cert_slurp']['content'] | b64decode }}"
         owner: "{{ vault_user }}"
         group: "{{ vault_group }}"
-        mode: "{{ 0644 }}"
+        mode: "0644"
       loop: "{{ ansible_play_hosts |
         reject('equalto', inventory_hostname) | list }}"
       loop_control:
@@ -144,7 +144,7 @@
     dest: "{{ vault_conf }}"
     owner: "{{ vault_user }}"
     group: "{{ vault_group }}"
-    mode: 0640
+    mode: "0640"
 
 - name: Create vault systemd service config
   template:
@@ -152,7 +152,7 @@
     dest: "/etc/systemd/system/{{ vault_service }}.service"
     owner: root
     group: root
-    mode: 0664
+    mode: "0664"
 
 - name: Start and enable vault systemd service
   systemd:
@@ -167,4 +167,4 @@
     dest: /etc/profile.d/vault.sh
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
