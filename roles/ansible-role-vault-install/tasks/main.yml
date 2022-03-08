@@ -58,17 +58,31 @@
     - "{{ vault_certs }}"
     - "{{ vault_data_path }}"
 
+- name: Install python3-pip
+  vars:
+    packages:
+      - python3-pip
+  package:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  when: ansible_distribution == 'Ubuntu'
+
 - name: Upgrade PIP
   pip:
     name: pip
     state: latest
+    executable: pip3
 
 - name: TLS block
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
   block:
 
     - name: Install python cryptography dependencies
       pip:
         name: "{{ item }}"
+        executable: pip3
       loop:
         - "cryptography"
 
