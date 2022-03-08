@@ -54,7 +54,7 @@
 # Pause depending on condition of localhost fact
 - name: Wait for raft cluster to stabilise
   pause:
-    seconds: 10
+    seconds: 15
   when: hostvars[ansible_play_hosts[0]]['vault_unsealed'] |
     default(false) | bool
 
