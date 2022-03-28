@@ -1,6 +1,6 @@
 ---
 
-- name: Cloud provider HashiCorp Vault installation
+- name: Install Hashicorp Vault
   hosts: vault
   become: yes
   gather_facts: yes

@@ -10,3 +10,6 @@ groupby:
   vault:
     type: pattern
     attribute: vault-*
+  gitlab:
+    type: pattern
+    attribute: gitlab-*

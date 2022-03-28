@@ -1,6 +1,6 @@
 ---
 
-- name: Cloud provider Vault start
+- name: Start Hashicorp Vault
   hosts: vault
   become: yes
   tags:

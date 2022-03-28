@@ -1,6 +1,6 @@
 ---
 
-- name: Cloud provider Vault stop
+- name: Stop Hashicorp Vault
   hosts: vault
   become: yes
   tags:
@@ -9,7 +9,7 @@
 
   tasks:
 
-    - name: Stop vault cloud instances
+    - name: Stop vault instances
       vars:
         service_name: vault
       include_role:

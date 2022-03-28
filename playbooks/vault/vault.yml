@@ -1,6 +1,6 @@
 ---
 
-- name: Manage Vault cloud configuration
+- name: Manage Hashicorp Vault configuration
   hosts: localhost
   connection: local
   gather_facts: no

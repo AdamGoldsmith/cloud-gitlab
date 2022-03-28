@@ -1,6 +1,6 @@
 ---
 
-- name: Cloud provider HashiCorp Vault configuration
+- name: Configure HashiCorp Vault
   hosts: vault
   become: yes
   gather_facts: yes

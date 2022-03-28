@@ -1,6 +1,6 @@
 ---
 
-- name: Cloud provider HashiCorp Vault unseal
+- name: Unseal HashiCorp Vault
   hosts: vault
   gather_facts: yes
   become: yes

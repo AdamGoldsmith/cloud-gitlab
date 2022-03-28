@@ -12,12 +12,15 @@
   pre_tasks:
 
     - name: Clone external roles
+      tags:
+        - clone
       git:
         repo: "{{ repo_item['source'] }}"
         dest: "{{ inventory_dir | default(ansible_inventory_sources[0]) }}\
           /../roles/{{ repo_item['name'] }}"
         clone: yes
         version: "{{ repo_item['version'] | default(omit) }}"
+        force: yes
       register: git_clone
       loop: "{{ external_roles }}"
       loop_control:
@@ -27,8 +30,28 @@
       become: no
       when: repo_item['name'] == 'ansible-role-gitlab'
 
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+      when: ansible_os_family == 'Debian'
+
   tasks:
 
     - name: Run gitlab server installation role
       include_role:
         name: ansible-role-gitlab
+
+    - name: Show initial root password block
+      tags: pw
+      block:
+
+        - name: Collect initial setup password
+          slurp:
+            path: /etc/gitlab/initial_root_password
+          register: slurp_password
+
+        - name: Show password from file contents
+          vars:
+            regex: 'Password: (.*)\n'
+          debug:
+            msg: "Initial root password: {{ slurp_password['content'] | b64decode | regex_search(regex, '\\1') | first }}"

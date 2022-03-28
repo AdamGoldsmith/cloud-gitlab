@@ -1,6 +1,6 @@
 ---
 
-- name: Cloud provider HashiCorp Vault initialisation
+- name: Initialise Hashicorp Vault
   hosts: vault
   become: yes
   gather_facts: yes

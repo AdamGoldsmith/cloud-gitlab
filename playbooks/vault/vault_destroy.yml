@@ -1,6 +1,6 @@
 ---
 
-- name: Cloud provider Vault destruction
+- name: Destroy Hashicorp Vault installation
   hosts: localhost
   connection: local
   gather_facts: no

@@ -1,6 +1,6 @@
 ---
 
-- name: Cloud provider HashiCorp Vault removal
+- name: Remove HashiCorp Vault
   hosts: vault
   become: yes
   gather_facts: yes

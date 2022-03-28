@@ -1,6 +1,6 @@
 ---
 
-- name: Cloud provider HashiCorp Vault enable approle
+- name: Enable HashiCorp Vault approle
   hosts: vault
   become: yes
   gather_facts: yes
