@@ -1,0 +1,6 @@
+---
+
+- name: Install GitLab runner
+  apt:
+    name: gitlab-runner
+    state: present

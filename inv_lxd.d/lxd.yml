@@ -13,3 +13,6 @@ groupby:
   gitlab:
     type: pattern
     attribute: gitlab-*
+  runner:
+    type: pattern
+    attribute: runner-*

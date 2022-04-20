@@ -1,0 +1,23 @@
+---
+
+- name: GitLab Runner installation
+  hosts: runner
+  become: yes
+  gather_facts: yes
+  tags:
+    - install
+    - gitlab
+    - runner_install
+
+  pre_tasks:
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+      when: ansible_os_family == 'Debian'
+
+  tasks:
+
+    - name: Run gitlab runner installation role
+      include_role:
+        name: ansible-role-runner

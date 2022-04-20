@@ -1,0 +1,16 @@
+---
+
+- name: Include OS-specific variables
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Download GitLab runner repository installation script
+  get_url:
+    url: "{{ runner_repository_installation_script_url }}"
+    dest: /tmp/runner_install_repository.sh
+    validate_certs: "{{ runner_download_validate_certs }}"
+
+- name: Install GitLab runner repository
+  command: bash /tmp/runner_install_repository.sh
+
+- name: Include OS-specific tasks
+  include_tasks: "{{ ansible_os_family }}.yml"

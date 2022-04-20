@@ -7,4 +7,5 @@
 
 - import_playbook: gitlab_create.yml
 - import_playbook: gitlab_install.yml
+- import_playbook: runner_install.yml
 - import_playbook: gitlab_destroy.yml

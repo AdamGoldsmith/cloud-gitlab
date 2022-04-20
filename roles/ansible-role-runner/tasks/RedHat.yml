@@ -1,0 +1,6 @@
+---
+
+- name: Install GitLab runner
+  yum:
+    name: gitlab-runner
+    state: present
