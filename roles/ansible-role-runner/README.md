@@ -4,7 +4,11 @@ Installs GitLab runner on any RedHat/CentOS or Debian/Ubuntu linux system. You w
 
 ## Requirements
 
-None
+1. For GitLab runners executing in Docker inside LXC containers, you will probably want to increase the sysctl `kernel.keys.maxkeys` vaule of the LXD HOST server
+    ```bash
+    sudo sc -c 'echo "kernel.keys.maxkeys = 5000" >> /etc/sysctl.conf'
+    sudo sysctl -p /etc/sysctl.conf
+    ```
 
 ## Role Variables
 

@@ -1,5 +1,6 @@
 *.retry
 /roles/ansible-role-gitlab/
+/roles/ansible-role-docker/
 .terraform/
 *.tfstate
 *.tfstate.backup
