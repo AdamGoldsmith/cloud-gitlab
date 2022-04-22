@@ -1,0 +1,66 @@
+---
+
+# # NOTE: Tried the following but there were problems
+# - name: Register GitLab runner
+#   community.general.gitlab_runner:
+#     api_url: "https://{{ gitlab_server_address }}:{{ gitlab_server_port }}/"
+#     api_token: "{{ access_token }}"
+#     registration_token: "{{ gitlab_runner_registration_token }}"
+#     # description: Docker runner
+#     description: "{{ inventory_hostname }}"
+#     state: present
+#     active: yes
+#     tag_list:
+#       - 'docker'
+#     run_untagged: no
+#     locked: no
+#     validate_certs: no
+
+- name: Get GitLab certificate
+  community.crypto.get_certificate:
+    host: "{{ gitlab_server_address }}"
+    port: "{{ gitlab_server_port }}"
+  run_once: yes
+  register: gitlab_cert
+
+- name: Debug cert
+  debug:
+    var: gitlab_cert['cert']
+  run_once: yes
+
+- name: Copy cert to file
+  copy:
+    content: "{{ gitlab_cert['cert'] }}"
+    dest: "/tmp/gitlab.crt"
+    mode: "0640"
+
+# NOTE: This step is not idempotent and will keep adding runners if run multiple times
+- name: Register runner with GitLab
+  command:
+    cmd: "gitlab-runner register
+      --url https://{{ gitlab_server_address }}:{{ gitlab_server_port }}
+      --registration-token {{ gitlab_runner_registration_token }}
+      --tls-ca-file /tmp/gitlab.crt
+      --tag-list {{ inventory_hostname }}
+      --run-untagged
+      --executor docker
+      --docker-image centos:latest
+      --non-interactive"
+  register: register_output
+
+- name: Debug register_output
+  debug:
+    var: register_output
+
+- name: Display registration help message
+  pause:
+    seconds: 1
+    prompt: |
+
+      Remember to register new runners by running:
+
+          sudo gitlab-runner register --url https://gitlab-01:4483/ --registration-token <TOKEN> --tls-ca-file /tmp/gitlab.crt --tag-list {{ inventory_hostname }} --executor docker --docker-image centos:latest
+
+# https://stackoverflow.com/questions/44458410/gitlab-ci-runner-ignore-self-signed-certificate
+# ansible runner -b -a "gitlab-runner register --url https://gitlab-01:4483/ --registration-token qfDsaASv5sme6yRgpJuQ --tls-ca-file /tmp/gitlab.crt --tag-list {{ inventory_hostname }} --executor shell -n"
+# ansible runner -b -a "gitlab-runner register --url https://gitlab-01:4483/ --registration-token qfDsaASv5sme6yRgpJuQ --tls-ca-file /tmp/gitlab.crt --tag-list {{ inventory_hostname }} --executor docker --docker-image centos:latest -n"

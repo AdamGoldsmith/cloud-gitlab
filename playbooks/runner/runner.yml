@@ -1,0 +1,9 @@
+---
+
+- name: Manage GitLab runner configuration
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+- import_playbook: runner_install.yml
+- import_playbook: runner_register.yml

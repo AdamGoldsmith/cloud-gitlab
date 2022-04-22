@@ -1,0 +1,4 @@
+---
+gitlab_server_address: gitlab.example.com
+gitlab_server_port: 4483
+gitlab_runner_registration_token: ""

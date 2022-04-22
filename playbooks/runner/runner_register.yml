@@ -1,0 +1,44 @@
+---
+
+- name: GitLab Runner registration
+  hosts: runner
+  become: yes
+  gather_facts: no
+  tags:
+    - runner
+    - runner_register
+
+  vars_prompt:
+
+    - name: gitlab_access_token
+      prompt: GitLab access token?
+
+    - name: runner_registration_token
+      prompt: GitLab runner registration token (retrieve this from GitLab)?
+
+  tasks:
+
+    - name: Run gitlab runner registration role
+      vars:
+        access_token: "{{ gitlab_access_token }}"
+        gitlab_server_address: "{{ hostvars[groups['gitlab'][0]]['inventory_hostname'] }}"
+        gitlab_server_port: 4483
+        gitlab_runner_registration_token: "{{ runner_registration_token }}"
+      include_role:
+        name: ansible-role-runner-register
+
+    # # TODO: Add to readme - Requires: pip install python-gitlab
+    # - name: Register GitLab runner
+    #   community.general.gitlab_runner:
+    #     api_url: "https://{{ hostvars[groups['gitlab'][0]]['inventory_hostname'] }}:4483/"
+    #     api_token: "{{ access_token }}"
+    #     registration_token: "{{ runner_registration_token }}"
+    #     # description: Docker runner
+    #     description: "{{ inventory_hostname }}"
+    #     state: present
+    #     active: yes
+    #     tag_list:
+    #       - 'docker'
+    #     run_untagged: no
+    #     locked: no
+    #     validate_certs: no

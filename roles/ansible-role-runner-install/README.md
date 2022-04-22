@@ -1,4 +1,4 @@
-# Ansible Role: GitLab Runner
+# Ansible Role: GitLab Runner Install
 
 Installs GitLab runner on any RedHat/CentOS or Debian/Ubuntu linux system. You will still need to register this runner manually.
 
@@ -19,6 +19,12 @@ Available variables are listed below, along with default values (see `defaults/m
 ```
 
 Controls whether to validate certificates when downloading the GitLab installation repository install script
+
+```yaml
+    install_python_gitlab: false
+```
+
+Whether to install the pip pythion gitlab libraries (useful for Ansible gitlab modules)
 
 ```yaml
     runner_repository_installation_script_url: "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.xxx.sh"

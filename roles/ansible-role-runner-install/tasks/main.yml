@@ -14,3 +14,29 @@
 
 - name: Include OS-specific tasks
   include_tasks: "{{ ansible_os_family }}.yml"
+
+- name: Gitlab python block
+  block:
+
+    - name: Install python3-pip
+      vars:
+        packages:
+          - python3-pip
+      package:
+        name: "{{ packages }}"
+        state: present
+        update_cache: yes
+
+    - name: Upgrade PIP
+      pip:
+        name: pip
+        state: latest
+        executable: pip3
+
+    - name: Install GitLab python libraries
+      pip:
+        name: python-gitlab
+        state: present
+        executable: pip3
+
+  when: install_python_gitlab

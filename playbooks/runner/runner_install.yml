@@ -6,7 +6,7 @@
   gather_facts: yes
   tags:
     - install
-    - gitlab
+    - runner
     - runner_install
 
   pre_tasks:
@@ -43,4 +43,4 @@
 
     - name: Run gitlab runner installation role
       include_role:
-        name: ansible-role-runner
+        name: ansible-role-runner-install

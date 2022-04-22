@@ -8,5 +8,6 @@
 - import_playbook: base/base_create.yml
 - import_playbook: bastion/bastion.yml
 - import_playbook: gitlab/gitlab.yml
+- import_playbook: runner/runner.yml
 - import_playbook: vault/vault.yml
 - import_playbook: base/base_destroy.yml
