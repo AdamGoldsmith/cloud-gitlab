@@ -4,27 +4,30 @@ Registers runners with GitLab server
 
 ## Requirements
 
-1. For GitLab runners executing in Docker inside LXC containers, you will probably want to increase the sysctl `kernel.keys.maxkeys` vaule of the LXD HOST server
-    ```bash
-    sudo sc -c 'echo "kernel.keys.maxkeys = 5000" >> /etc/sysctl.conf'
-    sudo sysctl -p /etc/sysctl.conf
-    ```
+* Host with gitlab-runner installed
 
 ## Role Variables
 
 Available variables are listed below, along with default values (see `defaults/main.yml`):
 
 ```yaml
-    runner_download_validate_certs: true
+    gitlab_server_address: gitlab.example.com
+    gitlab_server_port: 4483
 ```
 
-Controls whether to validate certificates when downloading the GitLab installation repository install script
+Address and port of the GitLab server instance
 
 ```yaml
-    runner_repository_installation_script_url: "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.xxx.sh"
+    gitlab_runner_registration_token: ""
 ```
 
-OS-specific repository installation script (see `vars/<OS Family>.yml`)
+Runner registration token. This can be found in the "Runner" section of the "Admin" page in the UI.
+
+```yaml
+    runner_docker_image: alpine:latest
+```
+
+Default docker image the runner uses
 
 ## Dependencies
 
@@ -33,27 +36,31 @@ None
 ## Example Playbook
 
 ```yaml
-    - name: Install GitLab Runner
-    hosts: runner
-    become: yes
-    gather_facts: yes
+- name: GitLab Runner registration
+  hosts: runner
+  become: yes
+  gather_facts: no
 
-    pre_tasks:
+  vars_prompt:
 
-        - name: Update apt cache
-        apt:
-            update_cache: yes
-        when: ansible_os_family == 'Debian'
+    - name: runner_registration_token
+      prompt: GitLab runner registration token (retrieve this from GitLab)?
 
-    tasks:
+  tasks:
 
-        - name: Run gitlab runner installation role
-        include_role:
-            name: ansible-role-runner
+    - name: Run gitlab runner registration role
+      vars:
+        gitlab_server_address: "gitlab.co.uk"
+        gitlab_server_port: 4483
+        gitlab_runner_registration_token: "{{ runner_registration_token }}"
+      include_role:
+        name: ansible-role-runner-register
 
-        roles:
-            - { role: geerlingguy.gitlab }
 ```
+
+## Known issues
+
+* There is no idempotency on the registration process. If you run the same process multiple times it will keep registering the same runner(s) in the GitLab server instance.
 
 ## License
 

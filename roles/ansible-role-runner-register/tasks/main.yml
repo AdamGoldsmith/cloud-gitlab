@@ -23,11 +23,6 @@
   run_once: yes
   register: gitlab_cert
 
-- name: Debug cert
-  debug:
-    var: gitlab_cert['cert']
-  run_once: yes
-
 - name: Copy cert to file
   copy:
     content: "{{ gitlab_cert['cert'] }}"
@@ -44,23 +39,6 @@
       --tag-list {{ inventory_hostname }}
       --run-untagged
       --executor docker
-      --docker-image centos:latest
+      --docker-image {{ runner_docker_image }}
       --non-interactive"
   register: register_output
-
-- name: Debug register_output
-  debug:
-    var: register_output
-
-- name: Display registration help message
-  pause:
-    seconds: 1
-    prompt: |
-
-      Remember to register new runners by running:
-
-          sudo gitlab-runner register --url https://gitlab-01:4483/ --registration-token <TOKEN> --tls-ca-file /tmp/gitlab.crt --tag-list {{ inventory_hostname }} --executor docker --docker-image centos:latest
-
-# https://stackoverflow.com/questions/44458410/gitlab-ci-runner-ignore-self-signed-certificate
-# ansible runner -b -a "gitlab-runner register --url https://gitlab-01:4483/ --registration-token qfDsaASv5sme6yRgpJuQ --tls-ca-file /tmp/gitlab.crt --tag-list {{ inventory_hostname }} --executor shell -n"
-# ansible runner -b -a "gitlab-runner register --url https://gitlab-01:4483/ --registration-token qfDsaASv5sme6yRgpJuQ --tls-ca-file /tmp/gitlab.crt --tag-list {{ inventory_hostname }} --executor docker --docker-image centos:latest -n"
