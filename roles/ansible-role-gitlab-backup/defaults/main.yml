@@ -1,0 +1,8 @@
+---
+local_backup_dest: /var/tmp/gitlab_backup
+gitlab_backup_path: /var/opt/gitlab/backups
+gitlab_backup_files:
+  - /etc/gitlab/gitlab.rb
+  - /etc/gitlab/gitlab-secrets.json
+  - /etc/gitlab/ssl/gitlab.crt
+  - /etc/gitlab/ssl/gitlab.key

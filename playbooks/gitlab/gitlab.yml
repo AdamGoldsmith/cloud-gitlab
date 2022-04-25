@@ -8,3 +8,4 @@
 - import_playbook: gitlab_create.yml
 - import_playbook: gitlab_install.yml
 - import_playbook: gitlab_destroy.yml
+- import_playbook: gitlab_backup.yml

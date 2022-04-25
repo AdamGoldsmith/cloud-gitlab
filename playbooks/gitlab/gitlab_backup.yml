@@ -1,0 +1,15 @@
+---
+
+- name: GitLab configuration backup
+  hosts: gitlab
+  become: yes
+  gather_facts: yes
+  tags:
+    - never
+    - gitlab_backup
+
+  tasks:
+
+    - name: Run gitlab backup role
+      include_role:
+        name: ansible-role-gitlab-backup

@@ -1,0 +1,37 @@
+---
+
+- name: Ensure local backup dir exists
+  file:
+    name: "{{ local_backup_dest }}"
+    state: directory
+    mode: "0777"
+  delegate_to: localhost
+  run_once: yes
+
+- name: Run GitLab backup command
+  command:
+    cmd: gitlab-backup create STRATEGY=copy
+  register: gitlab_backup_out
+
+- name: Set GitLab backup filename
+  vars:
+    pattern: 'Creating backup archive: (\d{10}_\d{4}_\d{2}_\d{2}_\d+\.\d+\.\d+_gitlab_backup.tar)'
+  set_fact:
+    gitlab_backup_filename: "{{ gitlab_backup_path }}/{{ gitlab_backup_out['stdout'] | regex_search(pattern, '\\1') | first }}"
+
+- name: Find SSH host keys
+  find:
+    paths: /etc/ssh
+    patterns: 'ssh_host_.*_key(\.pub)?'
+    use_regex: yes
+  register: ssh_keys
+
+- name: Fetch backup files
+  vars:
+    fetch_files: "{{ gitlab_backup_files +
+    ssh_keys['files'] | map(attribute='path') | list +
+    [ gitlab_backup_filename ] }}"
+  fetch:
+    src: "{{ item }}"
+    dest: "{{ local_backup_dest }}/"
+  loop: "{{ fetch_files }}"
