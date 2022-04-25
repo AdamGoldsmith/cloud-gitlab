@@ -8,11 +8,6 @@
     - runner
     - runner_register
 
-  vars_prompt:
-
-    - name: runner_registration_token
-      prompt: GitLab runner registration token (retrieve this from GitLab)?
-
   tasks:
 
     - name: Run gitlab runner registration role

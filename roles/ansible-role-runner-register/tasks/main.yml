@@ -36,7 +36,7 @@
       --url https://{{ gitlab_server_address }}:{{ gitlab_server_port }}
       --registration-token {{ gitlab_runner_registration_token }}
       --tls-ca-file /tmp/gitlab.crt
-      --tag-list {{ inventory_hostname }}
+      --tag-list {{ gitlab_tag_list | join(',') }}
       --run-untagged
       --executor docker
       --docker-image {{ runner_docker_image }}
