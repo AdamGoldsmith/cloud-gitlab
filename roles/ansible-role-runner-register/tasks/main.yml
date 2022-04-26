@@ -38,6 +38,9 @@
       --tls-ca-file /tmp/gitlab.crt
       {{ (gitlab_tag_list | length) | ternary('--tag-list ' + (gitlab_tag_list | join(',')), '--run-untagged=true') }}
       --executor docker
+      --description 'Docker runner'
       --docker-image {{ runner_docker_image }}
+      --docker-privileged
+      --docker-volumes /certs/client
       --non-interactive"
   register: register_output

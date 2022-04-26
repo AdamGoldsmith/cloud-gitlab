@@ -3,4 +3,4 @@ gitlab_server_address: gitlab.example.com
 gitlab_server_port: 4483
 gitlab_runner_registration_token: ""
 gitlab_tag_list: []
-runner_docker_image: alpine:latest
+runner_docker_image: docker:20.10.14
