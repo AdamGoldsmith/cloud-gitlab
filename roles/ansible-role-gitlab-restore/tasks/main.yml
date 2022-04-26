@@ -1,0 +1,61 @@
+---
+
+- name: Find backup files
+  find:
+    paths: "{{ local_backup_dest }}/{{ inventory_hostname }}"
+    recurse: yes
+  register: find_backup_files
+  delegate_to: localhost
+
+- name: Set backup timestamp
+  vars:
+    pattern: '.*\/(\d{10}_\d{4}_\d{2}_\d{2}_\d+\.\d+\.\d+.*)_gitlab_backup.tar'
+  set_fact:
+    gitlab_backup_timestamp: "{{ find_backup_files['files'] |
+      map(attribute='path') |
+      map('regex_search', pattern) |
+      reject('none') |
+      map('regex_replace', pattern, '\\1') |
+      sort | last | default('') }}"
+  when: not gitlab_backup_timestamp | length
+
+- name: No backup timestamp defined
+  fail:
+    msg: "No backup timestamp supplied or discovered - cannot continue"
+  when: not gitlab_backup_timestamp | length
+
+- name: Copy backup files
+  copy:
+    src: "{{ item }}"
+    dest: "{{ item | regex_replace(local_backup_dest + '/' + inventory_hostname | regex_escape) }}"
+  loop: "{{ find_backup_files['files'] | map(attribute='path') }}"
+  when: item | basename != 'gitlab-secrets.json'
+
+- name: Stop some GitLab services
+  vars:
+    gitlab_services:
+      - puma
+      - sidekiq
+  command:
+    cmd: "gitlab-ctl stop {{ item }}"
+  loop: "{{ gitlab_services }}"
+
+- name: Run GitLab restore command
+  command:
+    cmd: "gitlab-backup restore BACKUP={{ gitlab_backup_timestamp }}"
+  register: gitlab_restore_out
+
+- name: Copy secrets backup file
+  copy:
+    src: "{{ item }}"
+    dest: "{{ item | regex_replace(local_backup_dest + '/' + inventory_hostname | regex_escape) }}"
+  loop: "{{ find_backup_files['files'] | map(attribute='path') }}"
+  when: item | basename == 'gitlab-secrets.json'
+
+- name: Reconfigure GitLab
+  command:
+    cmd: gitlab-ctl reconfigure
+
+- name: Restart GitLab
+  command:
+    cmd: gitlab-ctl restart

@@ -1,0 +1,15 @@
+---
+
+- name: GitLab configuration restore
+  hosts: gitlab
+  become: yes
+  gather_facts: no
+  tags:
+    - never
+    - gitlab_restore
+
+  tasks:
+
+    - name: Run gitlab restore role
+      include_role:
+        name: ansible-role-gitlab-restore

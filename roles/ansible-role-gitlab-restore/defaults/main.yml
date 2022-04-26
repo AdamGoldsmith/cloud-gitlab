@@ -1,0 +1,3 @@
+---
+local_backup_dest: /var/tmp/gitlab_backup
+gitlab_backup_timestamp: ""
