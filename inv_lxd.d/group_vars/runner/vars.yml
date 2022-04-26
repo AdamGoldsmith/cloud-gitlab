@@ -1,5 +1,5 @@
 ---
-
 external_roles:
   - name: ansible-role-docker
     source: https://github.com/geerlingguy/ansible-role-docker.git
+gitlab_domain: gitlab-01
