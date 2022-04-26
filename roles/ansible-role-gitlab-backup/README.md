@@ -46,7 +46,7 @@ None
 - name: GitLab configuration backup
   hosts: gitlab
   become: yes
-  gather_facts: yes
+  gather_facts: no
   tags:
     - never
     - gitlab_backup
