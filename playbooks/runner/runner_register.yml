@@ -12,8 +12,8 @@
 
     - name: Run gitlab runner registration role
       vars:
-        gitlab_server_address: "{{ hostvars[groups['gitlab'][0]]['inventory_hostname'] }}"
-        gitlab_server_port: 4483
+        gitlab_server_address: "{{ gitlab_domain }}"
+        gitlab_server_port: "{{ gitlab_port }}"
         gitlab_runner_registration_token: "{{ runner_registration_token }}"
       include_role:
         name: ansible-role-runner-register

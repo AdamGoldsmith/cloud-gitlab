@@ -7,5 +7,7 @@ external_roles:
     # version: 3.2.0
     source: https://github.com/AdamGoldsmith/ansible-role-gitlab.git
     version: fix/timeout
-gitlab_external_url: "https://gitlab-01:4483/"
+gitlab_domain: gitlab-01
+gitlab_port: 4483
+gitlab_external_url: "https://{{ gitlab_domain }}:{{ gitlab_port }}/"
 gitlab_git_data_dir: "/git-data"
