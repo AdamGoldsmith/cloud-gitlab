@@ -1,6 +1,6 @@
 ---
 
-- name: Cloud provider GitLab destruction
+- name: GitLab destruction
   hosts: localhost
   connection: local
   gather_facts: no

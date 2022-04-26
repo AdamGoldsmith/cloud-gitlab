@@ -1,6 +1,6 @@
 ---
 
-- name: Cloud provider GitLab installation
+- name: GitLab installation
   hosts: gitlab
   become: yes
   gather_facts: yes
