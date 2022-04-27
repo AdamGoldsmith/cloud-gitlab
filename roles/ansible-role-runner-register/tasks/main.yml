@@ -23,10 +23,16 @@
   run_once: yes
   register: gitlab_cert
 
+- name: Ensure certificates directory exists
+  file:
+    path: "{{ gitlab_runner_certs_dir }}"
+    state: directory
+    mode: "0740"
+
 - name: Copy cert to file
   copy:
     content: "{{ gitlab_cert['cert'] }}"
-    dest: "/tmp/gitlab.crt"
+    dest: "{{ gitlab_runner_certs_dir }}/gitlab.crt"
     mode: "0640"
 
 # NOTE: This step is not idempotent and will keep adding runners if run multiple times
@@ -35,10 +41,10 @@
     cmd: "gitlab-runner register
       --url https://{{ gitlab_server_address }}:{{ gitlab_server_port }}
       --registration-token {{ gitlab_runner_registration_token }}
-      --tls-ca-file /tmp/gitlab.crt
+      --tls-ca-file {{ gitlab_runner_certs_dir }}/gitlab.crt
       {{ (gitlab_tag_list | length) | ternary('--tag-list ' + (gitlab_tag_list | join(',')), '--run-untagged=true') }}
       --executor docker
-      --description 'Docker runner'
+      --description 'Docker runner ({{ runner_docker_image }})'
       --docker-image {{ runner_docker_image }}
       --docker-privileged
       --docker-volumes /certs/client
