@@ -9,5 +9,10 @@ external_roles:
     version: fixes
 gitlab_domain: gitlab-01
 gitlab_port: 4483
+gitlab_registry_port: 5050
 gitlab_external_url: "https://{{ gitlab_domain }}:{{ gitlab_port }}/"
 gitlab_git_data_dir: "/git-data"
+gitlab_registry_enable: true
+gitlab_registry_external_url: "https://{{ gitlab_domain }}:{{ gitlab_registry_port }}"
+gitlab_registry_nginx_ssl_certificate: "/etc/gitlab/ssl/{{ gitlab_domain }}.crt"
+gitlab_registry_nginx_ssl_certificate_key: "/etc/gitlab/ssl/{{ gitlab_domain }}.key"
