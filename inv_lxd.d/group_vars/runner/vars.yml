@@ -4,3 +4,13 @@ external_roles:
     source: https://github.com/geerlingguy/ansible-role-docker.git
 gitlab_domain: gitlab-01
 gitlab_port: 4483
+gitlab_registry_port: 5050
+# docker_daemon_properties:
+#     # hosts: ["tcp://0.0.0.0:2376", "npipe://"]
+#     tlsverify: true
+#     tlscacert: /etc/gitlab-runner/gitlab.crt
+#     # tlscert: "C:\\ProgramData\\docker\\certs.d\\server-cert.pem"
+#     tlskey: /etc/gitlab-runner/gitlab.key
+docker_daemon_properties:
+  insecure-registries:
+    - "{{ gitlab_domain }}:{{ gitlab_registry_port }}"

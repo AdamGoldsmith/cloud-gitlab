@@ -1,3 +1,4 @@
 ---
 runner_download_validate_certs: true
 install_python_gitlab: false
+docker_daemon_properties: {}
