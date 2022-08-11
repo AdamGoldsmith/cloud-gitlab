@@ -9,7 +9,9 @@
     ```
     added, `size: 20GiB` to `root:` device
 
-2. Until I can properly fix TLS ca-cert from docker-in-docker, the following needs to be configured in the pipeline when communicating to the GitLab docker registry
+1. Running Centos 7 in LXD >5.0 requires a [kernel tweak](https://discuss.linuxcontainers.org/t/error-the-image-used-by-this-instance-requires-a-cgroupv1-host-system-when-using-clustering/13885) on the host
+
+1. Until I can properly fix TLS ca-cert from docker-in-docker, the following needs to be configured in the pipeline when communicating to the GitLab docker registry
 
     ```yaml
     stages:
