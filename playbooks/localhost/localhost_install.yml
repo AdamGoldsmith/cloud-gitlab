@@ -1,0 +1,36 @@
+---
+
+- name: Install system software
+  hosts: localhost
+  gather_facts: yes
+  become: yes
+  tags:
+    - never
+    - install
+
+  tasks:
+
+    - name: Install prerequisite software
+      vars:
+        packages:
+          - gnupg
+          - software-properties-common
+          - curl
+      ansible.builtin.apt:
+        name: "{{ packages }}"
+        update_cache: yes
+
+    - name: Add HashiCorp GPG key
+      ansible.builtin.apt_key:
+        url: https://apt.releases.hashicorp.com/gpg
+        state: present
+
+    - name: Add HashiCorp Linux repository
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_facts['lsb']['codename'] }} main"
+        state: present
+
+    - name: Install Terraform
+      ansible.builtin.apt:
+        name: terraform
+        update_cache: yes

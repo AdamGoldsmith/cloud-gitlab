@@ -1,0 +1,7 @@
+.terraform/
+config/cloud_init.yml
+*.terraform.lock.hcl
+*.terraform.tfstate.lock.info
+*.tfstate
+*.tfstate.backup
+*.tfvars

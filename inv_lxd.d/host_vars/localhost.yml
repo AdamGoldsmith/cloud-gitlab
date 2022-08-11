@@ -1,0 +1,29 @@
+---
+vm_ansible_user: ansible
+vm_ssh_key_path: "{{ playbook_dir }}/../../ssh_keys/id_{{ vm_ansible_user }}"
+vm_ssh_key_type: ed25519
+vm_ssh_comment: ansible-vm-key
+vm_root_pw: t0psecret
+
+ci_disable_root: False
+ci_ssh_pwauth: False
+ci_ssh_deletekeys: False
+
+ci_users:
+  users:
+    - name: root
+      lock_passwd: False
+      hashed_passwd: "{{ vm_root_pw |
+        password_hash('sha512', 65534 | random(seed=inventory_hostname) |
+        string) }}"
+    - name: "{{ vm_ansible_user }}"
+      ssh_authorized_keys:
+        - "{{ lookup('file', vm_ssh_key_path + '.pub') }}"
+      sudo: ['ALL=(ALL) NOPASSWD:ALL']
+      shell: /bin/bash
+
+system_settings:
+  fs.inotify.max_user_instances: 1048576
+  fs.inotify.max_queued_events: 1048576
+  fs.inotify.max_user_watches: 1048576
+  vm.max_map_count: 262144

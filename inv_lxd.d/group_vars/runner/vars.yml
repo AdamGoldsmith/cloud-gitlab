@@ -2,7 +2,7 @@
 external_roles:
   - name: ansible-role-docker
     source: https://github.com/geerlingguy/ansible-role-docker.git
-gitlab_domain: gitlab-01
+gitlab_domain: gitlab-server-01
 gitlab_port: 4483
 gitlab_registry_port: 5050
 # docker_daemon_properties:

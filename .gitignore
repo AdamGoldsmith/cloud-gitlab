@@ -1,4 +1,6 @@
 *.retry
+ssh_keys/*
+!ssh_keys/.gitkeep
 /roles/ansible-role-gitlab/
 /roles/ansible-role-docker/
 .terraform/

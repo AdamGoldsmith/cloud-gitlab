@@ -1,5 +1,5 @@
 plugin: community.general.lxd
-url: unix:/var/lib/lxd/unix.socket
+# url: unix:/var/lib/lxd/unix.socket
 state: RUNNING
 type_filter: both
 
@@ -12,7 +12,7 @@ groupby:
     attribute: vault-*
   gitlab:
     type: pattern
-    attribute: gitlab-*
+    attribute: gitlab-server-*
   runner:
     type: pattern
-    attribute: runner-*
+    attribute: gitlab-runner-*

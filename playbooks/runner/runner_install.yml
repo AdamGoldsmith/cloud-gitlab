@@ -41,7 +41,7 @@
       include_role:
         name: ansible-role-docker
 
-    # TODO: Until TLS is properly be configured
+    # TODO: Until TLS is properly configured
     - name: Populate docker daemon properties file
       tags:
         - daemon

@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nginx-test-namespace
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-test-deployment
+  namespace: nginx-test-namespace
+  labels:
+    app: nginx-test-label
+spec:
+  selector:
+    matchLabels:
+      app: nginx-test-label
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: nginx-test-label
+    spec:
+      containers:
+        - name: ngnix-test-container
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+              protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-test-service
+  namespace: nginx-test-namespace
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30090
+  selector:
+    app: nginx-test-label

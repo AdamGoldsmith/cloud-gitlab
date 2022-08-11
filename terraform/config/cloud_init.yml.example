@@ -1,0 +1,23 @@
+#cloud-config
+# vim: syntax=yaml
+#
+# ***********************
+# ---- for more examples look at: ------
+# ---> https://cloudinit.readthedocs.io/en/latest/topics/examples.html
+# ***********************
+
+disable_root: False
+ssh_pwauth: False
+ssh_deletekeys: False
+
+users:
+  - hashed_passwd: $6$43927$bOXt3Fu2FakU7TORjhbUb3fcTh232Knpv8YeT1ZF7XZMZHnwDMAZrUcWF1180Ynf5mnsR1sQ9g6ojmweLiVyd0
+    lock_passwd: false
+    name: root
+  - name: ansible
+    shell: /bin/bash
+    ssh_authorized_keys:
+    - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPGTZU1YOZOqGrU7tOnJXYTNmYjhIbkYsg4PwkAuBtTx
+      ansible-vm-key
+    sudo:
+    - ALL=(ALL) NOPASSWD:ALL
