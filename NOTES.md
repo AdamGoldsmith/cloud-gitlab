@@ -10,6 +10,25 @@
     added, `size: 20GiB` to `root:` device
 
 1. Running Centos 7 in LXD >5.0 requires a [kernel tweak](https://discuss.linuxcontainers.org/t/error-the-image-used-by-this-instance-requires-a-cgroupv1-host-system-when-using-clustering/13885) on the host
+    ```
+    grep GRUB_CMDLINE_LINUX= /etc/default/grub
+
+    GRUB_CMDLINE_LINUX=""
+    ```
+
+    ```
+    sudo sed -i -e 's/^GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="systemd.unified_cgroup_hierarchy=0"/' /etc/default/grub
+    ```
+
+    ```
+    grep GRUB_CMDLINE_LINUX= /etc/default/grub
+
+    GRUB_CMDLINE_LINUX="systemd.unified_cgroup_hierarchy=0"
+    ```
+
+    ```
+    sudo update-grub
+    ```
 
 1. Until I can properly fix TLS ca-cert from docker-in-docker, the following needs to be configured in the pipeline when communicating to the GitLab docker registry
 
