@@ -43,7 +43,7 @@ resource "lxd_volume" "vault" {
 resource "lxd_container" "vault" {
   for_each   = toset(local.instance_names.vault)
   name       = each.key
-  image      = "images:centos/7/cloud"
+  image      = "ubuntu:20.04"
   ephemeral  = false
   profiles   = ["default", lxd_profile.server_config.name]
 
